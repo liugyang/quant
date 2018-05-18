@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: quote-spirit
+      profile: dev
+      label: null
+      uri: http://localhost:7001
