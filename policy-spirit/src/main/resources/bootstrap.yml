@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: policy-spirit
+      profile: dev
+      label: null
+      uri: http://localhost:7001
