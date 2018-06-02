@@ -16,18 +16,52 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "config")
 public class Config {
-
-    private String openingTime;
-    private String closingTime;
-
-    private int daysForAtr;
-
     @Autowired
     @Qualifier("mailConfig")
     private MailConfig mailConfig;
 
+    private String openingTime;
+    private String closingTime;
+    private int daysForAtr;
     private int macdDays;
     private String evalFutureId;
+    private double timesForAtr;
+
+    public double getRateForTrade() {
+        return rateForTrade;
+    }
+
+    public void setRateForTrade(double rateForTrade) {
+        this.rateForTrade = rateForTrade;
+    }
+
+    public double getRevenceStamp() {
+        return revenceStamp;
+    }
+
+    public void setRevenceStamp(double revenceStamp) {
+        this.revenceStamp = revenceStamp;
+    }
+
+    private double rateForTrade;
+    private double revenceStamp;
+    private double securityDepositRate;
+
+    public double getSecurityDepositRate() {
+        return securityDepositRate;
+    }
+
+    public void setSecurityDepositRate(double securityDepositRate) {
+        this.securityDepositRate = securityDepositRate;
+    }
+
+    public double getTimesForAtr() {
+        return timesForAtr;
+    }
+
+    public void setTimesForAtr(double timesForAtr) {
+        this.timesForAtr = timesForAtr;
+    }
 
     public String getOpeningTime() {
         return openingTime;
