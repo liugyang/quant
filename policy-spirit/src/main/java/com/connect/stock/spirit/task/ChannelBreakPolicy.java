@@ -4,6 +4,7 @@ import com.connect.stock.spirit.Config;
 import com.connect.stock.spirit.component.FutureAccount;
 import com.connect.stock.spirit.dao.DAO;
 import com.connect.stock.spirit.event.SendMailEvent;
+import com.connect.stock.spirit.model.Share;
 import com.connect.stock.spirit.model.future.FutureQuote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 @ComponentScan
@@ -34,6 +37,8 @@ public class ChannelBreakPolicy {
 
     private ArrayBlockingQueue<FutureQuote> futureQuoteCacheForATR;
 
+    private Map<String, Double> stopLossPriceCacheForBuyLong = new LinkedHashMap<String, Double>();
+    private Map<String, Double> stopLossPriceCacheForShortSell = new LinkedHashMap<String, Double>();
 
     @Autowired
     @Qualifier("config")
@@ -186,6 +191,7 @@ public class ChannelBreakPolicy {
 
         //从数据库中获取当前行情，然后利用MACD数据判断是否具备建仓条件。
         //目前的开仓条件为当前价格超过当日MACD时，则进行建仓
+        boolean isShortSelling = false;
         List list = this.dao.getFutureQuoteByFutureId(this.config.getEvalFutureId(), 0, 1);
         if (list.size() > 0) {
             FutureQuote fq = (FutureQuote) list.get(0);
@@ -194,8 +200,21 @@ public class ChannelBreakPolicy {
 
                 double moreRate = (fq.getNumberOfTraded()-avgTradeAmount)/avgTradeAmount;
                 if(moreRate > 0.5){
+                    //发出购买建仓信号
                     applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "向上突破", fq.getID() + "突破" + this.config.getMacdDays() + "天最大值"));
                     this.highestPrice *= 1.05D;
+
+                    //模拟：建仓
+                    boolean result = futureAccount.buy(fq,1, false, config.getRateForTrade(),config.getRevenceStamp(),config.getSecurityDepositRate());
+                    if(!result)
+                        continue;
+
+                    isShortSelling = false;
+
+                    //模拟：计算止损线
+                    double price1 = fq.getHighestPrice() - 3*curAvgATR;
+                    double price2 = fq.getClosingPrice() - 2.5*curAvgATR;
+                    stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
                 }
             }
 
@@ -204,11 +223,54 @@ public class ChannelBreakPolicy {
 
                 double moreRate = (fq.getNumberOfTraded()-avgTradeAmount)/avgTradeAmount;
                 if(moreRate > 0.5) {
+                    //发出购买建仓信号
                     applicationContext.publishEvent(new SendMailEvent(this,this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "向下突破", fq.getID() + "突破" + this.config.getMacdDays() + "天最小值"));
                     this.lowestPrice *= 0.95D;
+
+                    //模拟：建仓
+                    boolean result = futureAccount.buy(fq,1, true, config.getRateForTrade(),config.getRevenceStamp(), config.getSecurityDepositRate());
+                    if(!result)
+                        continue;
+
+                    isShortSelling = true;
+
+                    //模拟：计算止损线
+                    double price1 = fq.getLowestPrice() + 3*curAvgATR;
+                    double price2 = fq.getClosingPrice() + 2.5*curAvgATR;
+                    stopLossPriceCache.put(fq.getID(),Math.min(price1,price2));
+                }
+            }
+
+            //模拟：判断是否当前价格突破止损线，如果突破则卖出
+            Share share = futureAccount.getShare(fq.getID(),isShortSelling);
+            if(share != null){
+                if(!isShortSelling) {
+                    double stopLossPrice = stopLossPriceCacheForBuyLong.get(share.getId());
+                    if (!isShortSelling && (stopLossPrice > fq.getCurrentPrice())) {
+                        //发出止损信号
+                        applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "止损", "ID:" + fq.getID()));
+                        //模拟建仓
+                        boolean result = futureAccount.sell(fq, share.getAmount(), isShortSelling, config.getRateForTrade(), config.getRevenceStamp(), config.getSecurityDepositRate());
+                        if (!result)
+                            logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
+
+                        stopLossPriceCache.remove(share.getId());
+                    }
+                }else {
+                    if (isShortSelling && (stopLossPrice < fq.getCurrentPrice())) {
+                        //发出止损信号
+                        applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "止损", "ID:" + fq.getID()));
+                        //模拟建仓
+                        boolean result = futureAccount.sell(fq, share.getAmount(), isShortSelling, config.getRateForTrade(), config.getRevenceStamp(), config.getSecurityDepositRate());
+                        if (!result)
+                            logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
+
+                        stopLossPriceCache.remove(share.getId());
+                    }
                 }
             }
         }
+
     }
 
     /**
