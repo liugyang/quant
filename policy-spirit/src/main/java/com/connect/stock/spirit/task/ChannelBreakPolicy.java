@@ -237,7 +237,7 @@ public class ChannelBreakPolicy {
                     //模拟：计算止损线
                     double price1 = fq.getLowestPrice() + 3*curAvgATR;
                     double price2 = fq.getClosingPrice() + 2.5*curAvgATR;
-                    stopLossPriceCache.put(fq.getID(),Math.min(price1,price2));
+                    stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
                 }
             }
 
@@ -254,9 +254,11 @@ public class ChannelBreakPolicy {
                         if (!result)
                             logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
 
-                        stopLossPriceCache.remove(share.getId());
+                        stopLossPriceCacheForBuyLong.remove(share.getId());
                     }
                 }else {
+                    double stopLossPrice = stopLossPriceCacheForShortSell.get(share.getId());
+
                     if (isShortSelling && (stopLossPrice < fq.getCurrentPrice())) {
                         //发出止损信号
                         applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "止损", "ID:" + fq.getID()));
@@ -265,7 +267,7 @@ public class ChannelBreakPolicy {
                         if (!result)
                             logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
 
-                        stopLossPriceCache.remove(share.getId());
+                        stopLossPriceCacheForShortSell.remove(share.getId());
                     }
                 }
             }
