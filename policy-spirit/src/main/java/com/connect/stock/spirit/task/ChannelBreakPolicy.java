@@ -207,7 +207,7 @@ public class ChannelBreakPolicy {
                     //模拟：建仓
                     boolean result = futureAccount.buy(fq,1, false, config.getRateForTrade(),config.getRevenceStamp(),config.getSecurityDepositRate());
                     if(!result)
-                        continue;
+                        return;
 
                     isShortSelling = false;
 
@@ -230,7 +230,7 @@ public class ChannelBreakPolicy {
                     //模拟：建仓
                     boolean result = futureAccount.buy(fq,1, true, config.getRateForTrade(),config.getRevenceStamp(), config.getSecurityDepositRate());
                     if(!result)
-                        continue;
+                        return;
 
                     isShortSelling = true;
 
@@ -252,7 +252,7 @@ public class ChannelBreakPolicy {
                         //模拟建仓
                         boolean result = futureAccount.sell(fq, share.getAmount(), isShortSelling, config.getRateForTrade(), config.getRevenceStamp(), config.getSecurityDepositRate());
                         if (!result)
-                            logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
+                            logger.error("Failure in selling share: id="+fq.getID() + " isShortSelling:" + isShortSelling);
 
                         stopLossPriceCacheForBuyLong.remove(share.getId());
                     }
@@ -265,7 +265,7 @@ public class ChannelBreakPolicy {
                         //模拟建仓
                         boolean result = futureAccount.sell(fq, share.getAmount(), isShortSelling, config.getRateForTrade(), config.getRevenceStamp(), config.getSecurityDepositRate());
                         if (!result)
-                            logger.error("Failure in selling share: id="fq.getID() + " isShortSelling:" + isShortSelling);
+                            logger.error("Failure in selling share: id="+fq.getID() + " isShortSelling:" + isShortSelling);
 
                         stopLossPriceCacheForShortSell.remove(share.getId());
                     }
@@ -288,7 +288,7 @@ public class ChannelBreakPolicy {
 
         if(lastQuote == null){
             lastQuote = fq;
-            lastDayHighestDiff = Math.abs(lastQuote.getHighestPrice()-lastQuote.getLowestPrice();
+            lastDayHighestDiff = Math.abs(lastQuote.getHighestPrice()-lastQuote.getLowestPrice());
         }
 
         todayHighestDiff = Math.abs(lastQuote.getClosingPrice() - fq.getHighestPrice());
