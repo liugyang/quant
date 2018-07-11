@@ -100,7 +100,6 @@ public class ChannelBreakPolicy {
                 this.futureQuoteCache.poll();
                 this.futureQuoteCache.put(fq);
             }
-
         }
 
         this.highestPrice = 0.0D;
@@ -116,6 +115,8 @@ public class ChannelBreakPolicy {
             avgTradeAmount += fq.getNumberOfTraded();
         }
         avgTradeAmount = avgTradeAmount/this.futureQuoteCache.size();
+
+        logger.info("[Avg Trade Amount]:"+avgTradeAmount);
     }
 
     @Scheduled(cron = "0 0 8 * * ?")
@@ -160,6 +161,8 @@ public class ChannelBreakPolicy {
             sumAtr = sumAtr + atr;
         }
         curAvgATR = sumAtr / config.getDaysForAtr();
+
+        logger.info("[Current Average ATR]:"+curAvgATR);
     }
 
     @Scheduled(fixedRate = 5000L)
@@ -199,10 +202,11 @@ public class ChannelBreakPolicy {
                 logger.info("Discovered upward break point.");
 
                 double moreRate = (fq.getNumberOfTraded()-avgTradeAmount)/avgTradeAmount;
-                if(moreRate > 0.5){
+                if(moreRate > config.getDiffAvgTradeAmountRate()){
+                    logger.info("Send signal for building buying long.");
                     //发出购买建仓信号
                     applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "向上突破", fq.getID() + "突破" + this.config.getMacdDays() + "天最大值"));
-                    this.highestPrice *= 1.05D;
+                    this.highestPrice *= 1.0D+config.getDiffPriceForNextAlerm();
 
                     //模拟：建仓
                     boolean result = futureAccount.buy(fq,1, false, config.getRateForTrade(),config.getRevenceStamp(),config.getSecurityDepositRate());
@@ -212,8 +216,8 @@ public class ChannelBreakPolicy {
                     isShortSelling = false;
 
                     //模拟：计算止损线
-                    double price1 = fq.getHighestPrice() - 3*curAvgATR;
-                    double price2 = fq.getClosingPrice() - 2.5*curAvgATR;
+                    double price1 = fq.getHighestPrice() - config.getTimeAtrForHighestPrice()*curAvgATR;
+                    double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
                     stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
                 }
             }
@@ -222,10 +226,11 @@ public class ChannelBreakPolicy {
                 logger.info("Discovered downward break point.");
 
                 double moreRate = (fq.getNumberOfTraded()-avgTradeAmount)/avgTradeAmount;
-                if(moreRate > 0.5) {
+                if(moreRate > config.getDiffAvgTradeAmountRate()) {
+                    logger.info("Send signal for building sell short.");
                     //发出购买建仓信号
                     applicationContext.publishEvent(new SendMailEvent(this,this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "向下突破", fq.getID() + "突破" + this.config.getMacdDays() + "天最小值"));
-                    this.lowestPrice *= 0.95D;
+                    this.lowestPrice *= 1.0D-config.getDiffPriceForNextAlerm();
 
                     //模拟：建仓
                     boolean result = futureAccount.buy(fq,1, true, config.getRateForTrade(),config.getRevenceStamp(), config.getSecurityDepositRate());
@@ -235,8 +240,8 @@ public class ChannelBreakPolicy {
                     isShortSelling = true;
 
                     //模拟：计算止损线
-                    double price1 = fq.getLowestPrice() + 3*curAvgATR;
-                    double price2 = fq.getClosingPrice() + 2.5*curAvgATR;
+                    double price1 = fq.getLowestPrice() + config.getTimeAtrForLowestPrice()*curAvgATR;
+                    double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
                     stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
                 }
             }
@@ -247,6 +252,7 @@ public class ChannelBreakPolicy {
                 if(!isShortSelling) {
                     double stopLossPrice = stopLossPriceCacheForBuyLong.get(share.getId());
                     if (!isShortSelling && (stopLossPrice > fq.getCurrentPrice())) {
+                        logger.info("Discorver stopping losing signal");
                         //发出止损信号
                         applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "止损", "ID:" + fq.getID()));
                         //模拟建仓
@@ -260,6 +266,7 @@ public class ChannelBreakPolicy {
                     double stopLossPrice = stopLossPriceCacheForShortSell.get(share.getId());
 
                     if (isShortSelling && (stopLossPrice < fq.getCurrentPrice())) {
+                        logger.info("Discorver stopping losing signal");
                         //发出止损信号
                         applicationContext.publishEvent(new SendMailEvent(this, this.config.getMailConfig().getEmailFrom(), this.config.getMailConfig().getWatchers(), "止损", "ID:" + fq.getID()));
                         //模拟建仓
@@ -280,7 +287,7 @@ public class ChannelBreakPolicy {
      * @param lastQuote
      * @param fq
      * @return
-     */
+     */ 
     private double calcAvgAtr(FutureQuote lastQuote, FutureQuote fq){
         double lastDayHighestDiff = 0.0;
         double todayHighestDiff = 0.0;

@@ -26,6 +26,43 @@ public class Config {
     private int macdDays;
     private String evalFutureId;
     private double timesForAtr;
+    private double diffAvgTradeAmountRate;
+    private double diffPriceForNextAlerm;
+    private double timeAtrForHighestPrice;
+    private double timeAtrForLowestPrice;
+    private double timeAtrForClosePrice;
+
+    public double getTimeAtrForLowestPrice() {
+        return timeAtrForLowestPrice;
+    }
+
+    public void setTimeAtrForLowestPrice(double timeAtrForLowestPrice) {
+        this.timeAtrForLowestPrice = timeAtrForLowestPrice;
+    }
+
+    public double getDiffPriceForNextAlerm() {
+        return diffPriceForNextAlerm;
+    }
+
+    public void setDiffPriceForNextAlerm(double diffPriceForNextAlerm) {
+        this.diffPriceForNextAlerm = diffPriceForNextAlerm;
+    }
+
+    public double getTimeAtrForHighestPrice() {
+        return timeAtrForHighestPrice;
+    }
+
+    public void setTimeAtrForHighestPrice(double timeAtrForHighestPrice) {
+        this.timeAtrForHighestPrice = timeAtrForHighestPrice;
+    }
+
+    public double getTimeAtrForClosePrice() {
+        return timeAtrForClosePrice;
+    }
+
+    public void setTimeAtrForClosePrice(double timeAtrForClosePrice) {
+        this.timeAtrForClosePrice = timeAtrForClosePrice;
+    }
 
     public double getRateForTrade() {
         return rateForTrade;
@@ -37,6 +74,14 @@ public class Config {
 
     public double getRevenceStamp() {
         return revenceStamp;
+    }
+
+    public double getDiffAvgTradeAmountRate() {
+        return diffAvgTradeAmountRate;
+    }
+
+    public void setDiffAvgTradeAmountRate(double diffAvgTradeAmountRate) {
+        this.diffAvgTradeAmountRate = diffAvgTradeAmountRate;
     }
 
     public void setRevenceStamp(double revenceStamp) {

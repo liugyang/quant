@@ -31,9 +31,9 @@
     <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->  
     <appender name="debug"  
         class="ch.qos.logback.core.rolling.RollingFileAppender">  
-        <File>debug/debug.log</File>  
+        <File>log/debug.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-            <FileNamePattern>debug/debug-%d{yyyy-MM-dd}.%i.log  
+            <FileNamePattern>log/debug-%d{yyyy-MM-dd}.%i.log
             </FileNamePattern>  
             <MaxHistory>10</MaxHistory>
             <TimeBasedFileNamingAndTriggeringPolicy  
