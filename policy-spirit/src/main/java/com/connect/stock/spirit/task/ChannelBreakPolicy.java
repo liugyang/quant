@@ -71,6 +71,94 @@ public class ChannelBreakPolicy {
     /**上次交易的行情*/
     private FutureQuote lastTradeQuote;
 
+    public ArrayBlockingQueue<FutureQuote> getFutureQuoteCache() {
+        return futureQuoteCache;
+    }
+
+    public void setFutureQuoteCache(ArrayBlockingQueue<FutureQuote> futureQuoteCache) {
+        this.futureQuoteCache = futureQuoteCache;
+    }
+
+    public ArrayBlockingQueue<FutureQuote> getFutureQuoteCacheForATR() {
+        return futureQuoteCacheForATR;
+    }
+
+    public void setFutureQuoteCacheForATR(ArrayBlockingQueue<FutureQuote> futureQuoteCacheForATR) {
+        this.futureQuoteCacheForATR = futureQuoteCacheForATR;
+    }
+
+    public Map<String, Double> getStopLossPriceCacheForBuyLong() {
+        return stopLossPriceCacheForBuyLong;
+    }
+
+    public void setStopLossPriceCacheForBuyLong(Map<String, Double> stopLossPriceCacheForBuyLong) {
+        this.stopLossPriceCacheForBuyLong = stopLossPriceCacheForBuyLong;
+    }
+
+    public Map<String, Double> getStopLossPriceCacheForShortSell() {
+        return stopLossPriceCacheForShortSell;
+    }
+
+    public void setStopLossPriceCacheForShortSell(Map<String, Double> stopLossPriceCacheForShortSell) {
+        this.stopLossPriceCacheForShortSell = stopLossPriceCacheForShortSell;
+    }
+
+    public Date getLastDate() {
+        return lastDate;
+    }
+
+    public void setLastDate(Date lastDate) {
+        this.lastDate = lastDate;
+    }
+
+    public ArrayBlockingQueue<Double> getCacheforATR() {
+        return cacheforATR;
+    }
+
+    public void setCacheforATR(ArrayBlockingQueue<Double> cacheforATR) {
+        this.cacheforATR = cacheforATR;
+    }
+
+    public double getCurAvgATR() {
+        return curAvgATR;
+    }
+
+    public void setCurAvgATR(double curAvgATR) {
+        this.curAvgATR = curAvgATR;
+    }
+
+    public double getAvgTradeAmount() {
+        return avgTradeAmount;
+    }
+
+    public void setAvgTradeAmount(double avgTradeAmount) {
+        this.avgTradeAmount = avgTradeAmount;
+    }
+
+    public double getHighestPrice() {
+        return highestPrice;
+    }
+
+    public void setHighestPrice(double highestPrice) {
+        this.highestPrice = highestPrice;
+    }
+
+    public double getLowestPrice() {
+        return lowestPrice;
+    }
+
+    public void setLowestPrice(double lowestPrice) {
+        this.lowestPrice = lowestPrice;
+    }
+
+    public FutureQuote getLastTradeQuote() {
+        return lastTradeQuote;
+    }
+
+    public void setLastTradeQuote(FutureQuote lastTradeQuote) {
+        this.lastTradeQuote = lastTradeQuote;
+    }
+
     @Scheduled(cron = "0 0 8 * * ?")
     public void initEvalData() throws Exception {
         logger.info("Initializing evaluation data");
