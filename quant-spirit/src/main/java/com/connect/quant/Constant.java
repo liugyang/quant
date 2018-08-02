@@ -102,13 +102,6 @@ public class Constant {
 	
 	
 	public enum WORKING_STATUS {
-		STATUS_UNKNOWN, STATUS_NOTTRADED, STATUS_PARTTRADED;
+		STATUS_UNKNOWN, STATUS_NOTTRADED, STATUS_PARTTRADED};
 	}
-	
-	/**普通模式*/
-	public final static String MODE_NORMAL = "normal";
-	/**上期所今昨分别平仓*/
-	public final static String MODE_SHFE = "shfe";
-	/**平今惩罚*/
-	public final static String MODE_TDPENALTY = "tdpenalty"; 
 }

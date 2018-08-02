@@ -1,14 +1,8 @@
 package com.connect.quant.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.cglib.beans.BeanCopier;
 
 import com.connect.quant.Constant;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 /**
  * 持仓信息
@@ -63,7 +57,7 @@ public class Position {
 	/** 市价 */
 	private double lastPrice;
 	/** 模式， 包括：普通模式、上期所今昨分别平仓、平今惩罚 */
-	private String mode;
+	private int mode;
 
 	private HashMap<String, Order> workingOrderDict;
 
@@ -242,11 +236,11 @@ public class Position {
 		this.lastPrice = lastPrice;
 	}
 
-	public String getMode() {
+	public int getMode() {
 		return mode;
 	}
 
-	public void setMode(String mode) {
+	public void setMode(int mode) {
 		this.mode = mode;
 	}
 
@@ -340,11 +334,11 @@ public class Position {
         if(order.getStatus().equals(Constant.WORKING_STATUS.STATUS_UNKNOWN) ||
         		order.getStatus().equals(Constant.WORKING_STATUS.STATUS_PARTTRADED) ||
         		order.getStatus().equals(Constant.WORKING_STATUS.STATUS_NOTTRADED)){
-            getWorkingOrderDict().put(order.getVtOrderID(),order);
+            workingOrderDict.put(order.getVtOrderID(),order);
             
         // 移除缓存中已经完成的委托
-        }else if(getWorkingOrderDict().containsKey(order.getVtOrderID())){
-        	getWorkingOrderDict().remove(order.getVtOrderID());
+        }else if(workingOrderDict.containsKey(order.getVtOrderID())){
+                workingOrderDict.remove(order.getVtOrderID());
         }
                 
         // 计算冻结
@@ -364,48 +358,44 @@ public class Position {
 		this.shortTdFrozen = 0;  
         
         // 遍历统计
-        for(Order order:getWorkingOrderDict().values()){
+        for(Order order:workingOrderDict.values()){
             // 计算剩余冻结量
-            int frozenVolume = order.getTotalVolume() - order.getTradedVolume();
+            double frozenVolume = order.getTotalVolume() - order.getTradedVolume();
             
             // 多头委托
             if(order.getDirection().equals(Constant.DIRECTION_LONG)){
-                // 平今
-                if(order.getOffset().equals(Constant.OFFSET_CLOSETODAY)){
-                    this.shortTdFrozen += frozenVolume;
-                // 平昨
-                }else if( order.getOffset().equals(Constant.OFFSET_CLOSEYESTERDAY)){
-                    this.shortYdFrozen += frozenVolume;
-                // 平仓
-                }else if(order.getOffset().equals(Constant.OFFSET_CLOSE)){
-                    this.shortTdFrozen += frozenVolume;
+                # 平今
+                if order.offset is OFFSET_CLOSETODAY:
+                    self.shortTdFrozen += frozenVolume
+                # 平昨
+                elif order.offset is OFFSET_CLOSEYESTERDAY:
+                    self.shortYdFrozen += frozenVolume
+                # 平仓
+                elif order.offset is OFFSET_CLOSE:
+                    self.shortTdFrozen += frozenVolume
                     
-                    if(this.shortTdFrozen > this.shortTd){
-                    	this.shortYdFrozen += (this.shortTdFrozen - this.shortTd);
-                    	this.shortTdFrozen = this.shortTd;
-                    }
-                }
-            // 空头委托
-            }else if(order.getDirection().equals(Constant.DIRECTION_SHORT)){
-                // 平今
-                if(order.getOffset().equals(Constant.OFFSET_CLOSETODAY)){
-                    this.longTdFrozen += frozenVolume;
-                // 平昨
-                }else if(order.getOffset().equals(Constant.OFFSET_CLOSEYESTERDAY)){
-                    this.longYdFrozen += frozenVolume;
-                // 平仓
-                }else if(order.getOffset().equals(Constant.OFFSET_CLOSE)){
-                	this.longTdFrozen += frozenVolume;
+                    if self.shortTdFrozen > self.shortTd:
+                        self.shortYdFrozen += (self.shortTdFrozen - self.shortTd)
+                        self.shortTdFrozen = self.shortTd
+            # 空头委托
+            elif order.direction is DIRECTION_SHORT:
+                # 平今
+                if order.offset is OFFSET_CLOSETODAY:
+                    self.longTdFrozen += frozenVolume
+                # 平昨
+                elif order.offset is OFFSET_CLOSEYESTERDAY:
+                    self.longYdFrozen += frozenVolume
+                # 平仓
+                elif order.offset is OFFSET_CLOSE:
+                    self.longTdFrozen += frozenVolume
                     
-                    if(this.longTdFrozen > this.longTd){
-                    	this.longYdFrozen += (this.longTdFrozen - this.longTd);
-                    	this.longTdFrozen = this.longTd;
-                    }
-                }
-            }     
-            // 汇总今昨冻结
-            this.longPosFrozen = this.longYdFrozen + this.longTdFrozen;
-            this.shortPosFrozen = this.shortYdFrozen + this.shortTdFrozen;
+                    if self.longTdFrozen > self.longTd:
+                        self.longYdFrozen += (self.longTdFrozen - self.longTd)
+                        self.longTdFrozen = self.longTd
+                        
+            # 汇总今昨冻结
+            self.longPosFrozen = self.longYdFrozen + self.longTdFrozen
+            self.shortPosFrozen = self.shortYdFrozen + self.shortTdFrozen
         }
 	}
 
@@ -456,146 +446,5 @@ public class Position {
 	public void calculatePnl() {
 		this.longPnl = this.longPos * (this.lastPrice - this.longPrice) * this.size;
 		this.shortPnl = this.shortPos * (this.shortPrice - this.lastPrice) * this.size;
-	}
-	/**
-	 * 行情更新
-	 */
-	public void updateTick(Tick tick){
-		this.lastPrice = tick.getLastPrice();
-		this.calculatePnl();
-	}
-	/**
-	 * 发单更新
-	 * @param order
-	 */
-	public void updateOrderReq(Order order){
-		this.getWorkingOrderDict().put(order.getVtOrderID(), order);
-		this.calculateFrozen();
-	}
-	/**
-	 * 转换委托请求
-	 * @param order
-	 */
-	public List<Order> convertOrderReq(Order order){
-		
-		int posAvailable = 0;
-        int tdAvailable = 0;
-        int ydAvailable = 0;  
-        List<Order> list = new ArrayList<Order>();
-		// 普通模式无需转换
-        if(this.mode.equals(Constant.MODE_NORMAL)){
-        	list.add(order);
-            return list;
-        }
-        // 上期所模式拆分今昨，优先平今
-        else if(this.mode.equals(Constant.MODE_SHFE)){
-            // 开仓无需转换
-            if(order.getOffset().equals(Constant.OFFSET_OPEN)){
-            	list.add(order);
-                return list;
-            }
-                		
-            // 多头
-            if(order.getDirection().equals(Constant.DIRECTION_LONG)){
-                posAvailable = this.shortPos - this.shortPosFrozen;
-                tdAvailable = this.shortTd- this.shortTdFrozen;
-                ydAvailable = this.shortYd - this.shortYdFrozen;          
-            // 空头
-            } else {
-                posAvailable = this.longPos - this.longPosFrozen;
-                tdAvailable = this.longTd - this.longTdFrozen;
-                ydAvailable = this.longYd - this.longYdFrozen;
-            }
-                
-            //平仓量超过总可用，拒绝，返回空列表
-            if(order.getTotalVolume() > posAvailable){
-                return list;
-            }
-            // 平仓量小于今可用，全部平今
-            else if(order.getTotalVolume() <= tdAvailable){
-                order.setOffset(Constant.OFFSET_CLOSETODAY);
-                list.add(order);
-                return list;
-            }
-            // 平仓量大于今可用，平今再平昨
-            else {
-            	BeanCopier copy = BeanCopier.create(Order.class, Order.class, false);
-                if(tdAvailable > 0){
-                	Order orderTd = new Order();
-                	copy.copy(order, orderTd, null);
-                	orderTd.setOffset(Constant.OFFSET_CLOSETODAY);
-                    orderTd.setTotalVolume(tdAvailable);
-                    list.add(orderTd);
-                }
-                    
-                Order orderYd = new Order();
-                copy.copy(order, orderYd, null);
-                orderYd.setOffset(Constant.OFFSET_CLOSEYESTERDAY);
-                orderYd.setTotalVolume(order.getTotalVolume() - tdAvailable);
-                list.add(orderYd);
-                
-                return list;
-            }
-        }
-            
-        // 平今惩罚模式，没有今仓则平昨，否则锁仓
-        else if(this.mode.equals(Constant.MODE_TDPENALTY)){
-        	int td = 0;
-        	// 多头
-            if(order.getDirection().equals(Constant.DIRECTION_LONG)){
-                td = this.shortTd;
-                ydAvailable = this.shortYd - this.shortYdFrozen;
-            }
-            // 空头
-            else{
-                td = this.longTd;
-                ydAvailable = this.longYd - this.longYdFrozen;
-            }
-                
-            // 这里针对开仓和平仓委托均使用一套逻辑
-            // 如果有今仓，则只能开仓（或锁仓）
-            if(td>0){
-                order.setOffset(Constant.OFFSET_OPEN);
-                list.add(order);
-                return list;
-            }   		
-            // 如果平仓量小于昨可用，全部平昨
-            else if(order.getTotalVolume() <= ydAvailable){
-                if(this.exchange.equals(Constant.EXCHANGE_SHFE)){
-                    order.setOffset(Constant.OFFSET_CLOSEYESTERDAY);
-                }else{
-                    order.setOffset(Constant.OFFSET_CLOSE);
-                }
-                list.add(order);
-                return list;
-            }
-            // 平仓量大于昨可用，平仓再反向开仓
-            else{
-            	BeanCopier copy = BeanCopier.create(Order.class, Order.class, false);
-            	
-                if(ydAvailable > 0){
-                    Order reqClose = new Order();
-                    copy.copy(order,reqClose,null);
-                    if(this.exchange.equals(Constant.EXCHANGE_SHFE)){
-                        reqClose.getOffset().equals(Constant.OFFSET_CLOSEYESTERDAY);
-                    }else{
-                        reqClose.getOffset().equals(Constant.OFFSET_CLOSE);
-                    }
-                    reqClose.setTotalVolume(ydAvailable);
-                    list.add(reqClose);
-                }
-                
-                Order reqOpen = new Order();
-                copy.copy(order,reqOpen,null);
-                reqOpen.setOffset(Constant.OFFSET_OPEN);
-                reqOpen.setTotalVolume(order.getTotalVolume() - ydAvailable);
-                list.add(reqOpen);
-                
-                return list;
-            }
-        }
-        
-        // 其他情况则直接返回空
-        return list;
 	}
 }
