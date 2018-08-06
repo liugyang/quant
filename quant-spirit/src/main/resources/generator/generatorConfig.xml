@@ -7,7 +7,9 @@
     <!--<classPathEntry location="E:\Database\Oracle\jdbc\lib\ojdbc14.jar" />-->
     <context id="MySQLTables" targetRuntime="MyBatis3"> 
         <commentGenerator>  
-            <property name="suppressAllComments" value="false" />  
+            <property name="suppressAllComments" value="false" />
+            <property name="addRemarkComments" value="true" />
+            <property name="javaFileEncoding" value="UTF-8"/>
         </commentGenerator>  
         <!-- 数据库链接URL、用户名、密码 -->  
          <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/my_db?characterEncoding=utf8" userId="root" password="123456"> -->   
@@ -17,21 +19,27 @@
             <property name="forceBigDecimals" value="false" />  
         </javaTypeResolver>  
         <!-- 生成模型的包名和位置 -->  
-        <javaModelGenerator targetPackage="com.connect.quant.model" targetProject="src/main/java">  
+        <javaModelGenerator targetPackage="com.connect.quant.model" targetProject="quant-spirit/src/main/java">  
             <property name="enableSubPackages" value="true" />  
             <property name="trimStrings" value="true" />  
         </javaModelGenerator>  
         <!-- 生成的映射文件包名和位置 -->  
-        <sqlMapGenerator targetPackage="com.connect.quant.dao.xml" targetProject="src/main/java">  
+        <sqlMapGenerator targetPackage="com.connect.quant.dao.xml" targetProject="quant-spirit/src/main/java">  
             <property name="enableSubPackages" value="true" />  
         </sqlMapGenerator>  
         <!-- 生成DAO的包名和位置 -->  
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.connect.quant.dao.mapper" targetProject="src/main/java">  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.connect.quant.dao.mapper" targetProject="quant-spirit/src/main/java">  
             <property name="enableSubPackages" value="true" />  
         </javaClientGenerator>
         
         <table tableName="STOCK_QUOTE" domainObjectName="StockQuote"/>
         <table tableName="FUTURE_QUOTE" domainObjectName="FutureQuote"/>
         <table tableName="PRODUCT_QUOTE" domainObjectName="ProductQuote"/>
+ 
+        <table tableName="BAR" domainObjectName="Bar"/>
+        <table tableName="ORDERS" domainObjectName="Order"/>
+        <table tableName="ACCOUNT" domainObjectName="Account"/>
+        <table tableName="TRADE" domainObjectName="Trade"/>
+        <table tableName="POSITIONS" domainObjectName="Position"/>
     </context>  
 </generatorConfiguration>
