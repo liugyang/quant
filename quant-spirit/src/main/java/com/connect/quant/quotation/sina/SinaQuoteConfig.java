@@ -1,6 +1,6 @@
 package com.connect.quant.quotation.sina;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +19,8 @@ public class SinaQuoteConfig extends QuoteConfig{
 	private String serviceUrl;
 	
 	private String interval;
-	
-	private List<String> vtSymbols;
+	/**合约编码以及所属市场，key:value形式*/
+	private Map<String,String> vtSymbols;
 	/**	时间窗口，cron表达式 */
 	private String tradeTimeExpression;
 
@@ -50,11 +50,11 @@ public class SinaQuoteConfig extends QuoteConfig{
 		this.interval = interval;
 	}
 
-	public List<String> getVtSymbols() {
+	public Map<String,String> getVtSymbols() {
 		return vtSymbols;
 	}
 
-	public void setVtSymbols(List<String> vtSymbols) {
+	public void setVtSymbols(Map<String,String> vtSymbols) {
 		this.vtSymbols = vtSymbols;
 	}
 }

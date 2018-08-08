@@ -11,6 +11,7 @@ import com.connect.quant.model.Order;
 import com.connect.quant.model.Trade;
 
 public class ExPosition extends Position{
+	
 	private HashMap<String, Order> workingOrderDict;
 
 	public HashMap<String, Order> getWorkingOrderDict() {

@@ -21,4 +21,8 @@ public abstract class QuoteService implements Job{
 		processTick();
 		processBar();
 	}
+	
+	public abstract void beforeExecute();
+	
+	public abstract void afterExecute();
 }

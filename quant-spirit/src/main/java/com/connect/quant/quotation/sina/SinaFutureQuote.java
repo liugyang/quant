@@ -33,20 +33,20 @@ public class SinaFutureQuote extends FutureQuote {
 		} catch (NumberFormatException e){
 			e.printStackTrace();
 		}
-		this.setOpeningprice(Double.parseDouble(splits[2].trim()));
-		this.setHighestprice(Double.parseDouble(splits[3].trim()));
-		this.setLowestprice(Double.parseDouble(splits[4].trim()));
-		this.setClosingprice(Double.parseDouble(splits[5].trim()));
-		this.setPriceofbuy1(Double.parseDouble(splits[6].trim()));
-		this.setPriceofsale1(Double.parseDouble(splits[7].trim()));
-		this.setCurrentprice(Double.parseDouble(splits[8].trim()));
-		this.setSettlementprice(Double.parseDouble(splits[9].trim()));
-		this.setLastsettlementprice(Double.parseDouble(splits[10].trim()));
-		this.setAmountofbuy(Long.parseLong(splits[11].trim()));
-		this.setAmountofsale(Long.parseLong(splits[12].trim()));
-		this.setNumberofheld(Long.parseLong(splits[13].trim()));
-		this.setNumberoftraded(Long.parseLong(splits[14].trim()));
-		this.setMarket(splits[15].trim());
+		this.setOpeningPrice(Double.parseDouble(splits[2].trim()));
+		this.setHighestPrice(Double.parseDouble(splits[3].trim()));
+		this.setLowestPrice(Double.parseDouble(splits[4].trim()));
+		this.setClosingPrice(Double.parseDouble(splits[5].trim()));
+		this.setPriceOfBuy1(Double.parseDouble(splits[6].trim()));
+		this.setPriceOfSale1(Double.parseDouble(splits[7].trim()));
+		this.setCurrentPrice(Double.parseDouble(splits[8].trim()));
+		this.setSettlementPrice(Double.parseDouble(splits[9].trim()));
+		this.setLastSettlementPrice(Double.parseDouble(splits[10].trim()));
+		this.setAmountOfBuy(Long.parseLong(splits[11].trim()));
+		this.setAmountOfSale(Long.parseLong(splits[12].trim()));
+		this.setNumberOfHeld(Long.parseLong(splits[13].trim()));
+		this.setNumberOfTraded(Long.parseLong(splits[14].trim()));
+		this.setExchange(splits[15].trim());
 		this.setCategory(splits[16].trim());
 		DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
 		try {
@@ -55,14 +55,14 @@ public class SinaFutureQuote extends FutureQuote {
 			e.printStackTrace();
 		}
 		//splits[18] TODO
-		this.setPriceofbuy2(Double.parseDouble(splits[19].trim()));
-		this.setPriceofsale2(Double.parseDouble(splits[20].trim()));
-		this.setPriceofbuy3(Double.parseDouble(splits[21].trim()));
-		this.setPriceofsale3(Double.parseDouble(splits[22].trim()));
-		this.setPriceofbuy4(Double.parseDouble(splits[23].trim()));
-		this.setPriceofsale4(Double.parseDouble(splits[24].trim()));
-		this.setPriceofbuy5(Double.parseDouble(splits[25].trim()));
-		this.setPriceofsale5(Double.parseDouble(splits[26].trim()));
+		this.setPriceOfBuy2(Double.parseDouble(splits[19].trim()));
+		this.setPriceOfSale2(Double.parseDouble(splits[20].trim()));
+		this.setPriceOfBuy3(Double.parseDouble(splits[21].trim()));
+		this.setPriceOfSale3(Double.parseDouble(splits[22].trim()));
+		this.setPriceOfBuy4(Double.parseDouble(splits[23].trim()));
+		this.setPriceOfSale4(Double.parseDouble(splits[24].trim()));
+		this.setPriceOfBuy5(Double.parseDouble(splits[25].trim()));
+		this.setPriceOfSale5(Double.parseDouble(splits[26].trim()));
 		//splits[27] TODO
 	}
 

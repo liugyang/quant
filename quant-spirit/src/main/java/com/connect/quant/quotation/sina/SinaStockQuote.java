@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import com.connect.quant.model.Tick;
 import com.connect.quant.model.StockQuote;
 /**
  * 新浪A股行情对象
@@ -24,35 +25,35 @@ public class SinaStockQuote extends StockQuote {
 		value.replace("\"", "");
 		String[] splits = value.split(",");
 		this.setName(splits[0].trim());
-		this.setOpeningprice(Double.parseDouble(splits[1].trim()));
-		this.setClosingprice(Double.parseDouble(splits[2].trim()));
-		this.setCurrentprice(Double.parseDouble(splits[3].trim()));
-		this.setHighestprice(Double.parseDouble(splits[4].trim()));
-		this.setLowestprice(Double.parseDouble(splits[5].trim()));
-		this.setCompetitivebuyprice(Double.parseDouble(splits[6].trim()));
-		this.setCompetitivesaleprice(Double.parseDouble(splits[7].trim()));
-		this.setNumberofsharetraded(Long.parseLong(splits[8].trim()));
-		this.setMoneyofsharetraded(Double.parseDouble(splits[9].trim()));
-		this.setAmountofbuy1(Long.parseLong(splits[10].trim()));
-		this.setPriceofbuy1(Double.parseDouble(splits[11].trim()));
-		this.setAmountofbuy2(Long.parseLong(splits[12].trim()));
-		this.setPriceofbuy2(Double.parseDouble(splits[13].trim()));
-		this.setAmountofbuy3(Long.parseLong(splits[14].trim()));
-		this.setPriceofbuy3(Double.parseDouble(splits[15].trim()));
-		this.setAmountofbuy4(Long.parseLong(splits[16].trim()));
-		this.setPriceofbuy4(Double.parseDouble(splits[17].trim()));
-		this.setAmountofbuy5(Long.parseLong(splits[18].trim()));
-		this.setPriceofbuy5(Double.parseDouble(splits[19].trim()));
-		this.setAmountofsale1(Long.parseLong(splits[20].trim()));
-		this.setPriceofsale1(Double.parseDouble(splits[21].trim()));
-		this.setAmountofsale2(Long.parseLong(splits[22].trim()));
-		this.setPriceofsale2(Double.parseDouble(splits[23].trim()));
-		this.setAmountofsale3(Long.parseLong(splits[24].trim()));
-		this.setPriceofsale3(Double.parseDouble(splits[25].trim()));
-		this.setAmountofsale4(Long.parseLong(splits[26].trim()));
-		this.setPriceofsale4(Double.parseDouble(splits[27].trim()));
-		this.setAmountofsale5(Long.parseLong(splits[28].trim()));
-		this.setPriceofsale5(Double.parseDouble(splits[29].trim()));
+		this.setOpeningPrice(Double.parseDouble(splits[1].trim()));
+		this.setClosingPrice(Double.parseDouble(splits[2].trim()));
+		this.setCurrentPrice(Double.parseDouble(splits[3].trim()));
+		this.setHighestPrice(Double.parseDouble(splits[4].trim()));
+		this.setLowestPrice(Double.parseDouble(splits[5].trim()));
+		this.setCompetitiveBuyPrice(Double.parseDouble(splits[6].trim()));
+		this.setCompetitiveSalePrice(Double.parseDouble(splits[7].trim()));
+		this.setNumberOfShareTraded(Long.parseLong(splits[8].trim()));
+		this.setMoneyOfShareTraded(Double.parseDouble(splits[9].trim()));
+		this.setAmountOfBuy1(Long.parseLong(splits[10].trim()));
+		this.setPriceOfBuy1(Double.parseDouble(splits[11].trim()));
+		this.setAmountOfBuy2(Long.parseLong(splits[12].trim()));
+		this.setPriceOfBuy2(Double.parseDouble(splits[13].trim()));
+		this.setAmountOfBuy3(Long.parseLong(splits[14].trim()));
+		this.setPriceOfBuy3(Double.parseDouble(splits[15].trim()));
+		this.setAmountOfBuy4(Long.parseLong(splits[16].trim()));
+		this.setPriceOfBuy4(Double.parseDouble(splits[17].trim()));
+		this.setAmountOfBuy5(Long.parseLong(splits[18].trim()));
+		this.setPriceOfBuy5(Double.parseDouble(splits[19].trim()));
+		this.setAmountOfSale1(Long.parseLong(splits[20].trim()));
+		this.setPriceOfSale1(Double.parseDouble(splits[21].trim()));
+		this.setAmountOfSale2(Long.parseLong(splits[22].trim()));
+		this.setPriceOfSale2(Double.parseDouble(splits[23].trim()));
+		this.setAmountOfSale3(Long.parseLong(splits[24].trim()));
+		this.setPriceOfSale3(Double.parseDouble(splits[25].trim()));
+		this.setAmountOfSale4(Long.parseLong(splits[26].trim()));
+		this.setPriceOfSale4(Double.parseDouble(splits[27].trim()));
+		this.setAmountOfSale5(Long.parseLong(splits[28].trim()));
+		this.setPriceOfSale5(Double.parseDouble(splits[29].trim()));
 		DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			this.setDate(format1.parse(splits[30].trim()));
@@ -65,6 +66,45 @@ public class SinaStockQuote extends StockQuote {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Tick toTick(){
+		Tick tick =  new Tick();
+		tick.setSymbol(	this.getSymbol());
+		tick.setVtSymbol(this.getSymbol()+"."+this.getExchange());
+		tick.setLastPrice(	this.getCurrentPrice()			);
+		tick.setLastVolume(	this.getNumberOfShareTraded()		);	
+		tick.setVolume(		this.getNumberOfShareTraded()		);
+		tick.setOpenlongerest(openlongerest);(	this.getMoneyOfShareTraded()			);
+		tick.setTime(	this.getTime()			);
+		tick.setDate(		this.getDate()		);
+		tick.setDatetime(				);
+		tick.setOpenPrice(				);
+		tick.setHighPrice(				);
+		tick.setLowPrice(				);
+		tick.setPreClosePrice(				);
+		tick.setUpperLimit(				);
+		tick.setLowerLimit(				);
+		tick.setBidPrice1(				);
+		tick.setBidPrice2(				);
+		tick.setBidPrice3(				);
+		tick.setBidPrice4(				);
+		tick.setBidPrice5(				);
+		tick.setAskPrice1(				);
+		tick.setAskPrice2(				);
+		tick.setAskPrice3(				);
+		tick.setAskPrice4(				);
+		tick.setAskPrice5(				);
+		tick.setBidVolume1(				);
+		tick.setBidVolume2(				);
+		tick.setBidVolume3(				);
+		tick.setBidVolume4(				);
+		tick.setBidVolume5(				);
+		tick.setAskVolume1(				);
+		tick.setAskVolume2(				);
+		tick.setAskVolume3(				);
+		tick.setAskVolume4(				);
+		tick.setAskVolume5(				);
 	}
 
 	@Override

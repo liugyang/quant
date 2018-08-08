@@ -20,8 +20,6 @@ import com.connect.quant.quotation.QuoteService;
 
 public class SinaQuoteProccessor extends QuoteService {
 	
-	
-	
 	private CloseableHttpAsyncClient client = null;
 	
 	private HttpGet[] requests = null;
@@ -40,27 +38,27 @@ public class SinaQuoteProccessor extends QuoteService {
 			
 			requests = new HttpGet[quoteConfig.getVtSymbols().size()];
 			for(int i=0;i<requests.length;i++){
-				requests[i] = new HttpGet(quoteConfig.getServiceUrl()+quoteConfig.getVtSymbols().get(i));
+				requests[i] = new HttpGet(quoteConfig.getServiceUrl() + quoteConfig.getVtSymbols().get(i));
 			}
 		}
 		
-//		Date now;
-//		try {
-//			now = df.parse(df.format(new Date()));
-//			if(now.before(df.parse(config.getStockConfig().getOpeningTime())) || now.after(df.parse(config.getStockConfig().getClosingTime()))){
-//				logger.trace("The market is close now.");
-//			}
-//		} catch (ParseException e1) {
-//			e1.printStackTrace();
-//		}
-//		
-//		if(stockClient == null){
-//			throw new Exception("HTTP Client is not started. Please invoke the function init()");
-//		}
-//		
-//		if(!stockClient.isRunning()){
-//			stockClient.start();
-//		}
+		Date now;
+		try {
+			now = df.parse(df.format(new Date()));
+			if(now.before(df.parse(config.getStockConfig().getOpeningTime())) || now.after(df.parse(config.getStockConfig().getClosingTime()))){
+				logger.trace("The market is close now.");
+			}
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		
+		if(stockClient == null){
+			throw new Exception("HTTP Client is not started. Please invoke the function init()");
+		}
+		
+		if(!stockClient.isRunning()){
+			stockClient.start();
+		}
 	}
 
 	@Override
