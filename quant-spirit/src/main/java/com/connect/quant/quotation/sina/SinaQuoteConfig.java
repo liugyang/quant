@@ -1,5 +1,7 @@
 package com.connect.quant.quotation.sina;
 
+import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,10 +21,12 @@ public class SinaQuoteConfig extends QuoteConfig{
 	private String serviceUrl;
 	
 	private String interval;
-	/**合约编码以及所属市场，key:value形式*/
-	private Map<String,String> vtSymbols;
+	/**关注合约清单的列表信息*/
+	private String contractsListPath;
 	/**	时间窗口，cron表达式 */
 	private String tradeTimeExpression;
+	/**关注合约的配置信息，需要通过加载contractList配置文件*/
+	private Map<String, Map<String,String>> contractMap = null;
 
 	public String getTradeTimeExpression() {
 		return tradeTimeExpression;
@@ -38,6 +42,14 @@ public class SinaQuoteConfig extends QuoteConfig{
 		return serviceUrl;
 	}
 
+	public String getContractsListPath() {
+		return contractsListPath;
+	}
+
+	public void setContractsListPath(String contractsListPath) {
+		this.contractsListPath = contractsListPath;
+	}
+
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
@@ -50,11 +62,36 @@ public class SinaQuoteConfig extends QuoteConfig{
 		this.interval = interval;
 	}
 
-	public Map<String,String> getVtSymbols() {
-		return vtSymbols;
-	}
+	public Map<String, Map<String,String>> getContractList() throws FileNotFoundException {
+		if(contractMap == null) {
+			BufferedReader reader = null;
+			String content = "";
+			try{
+				FileInputStream fileInputStream = new FileInputStream(this.getContractsListPath());
+				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+				reader = new BufferedReader(inputStreamReader);
+				String tempString = null;
+				while((tempString = reader.readLine()) != null){
+					content += tempString;
+				}
+				reader.close();
+			}catch(IOException e){
+				e.printStackTrace();
+			}finally{
+				if(reader != null){
+					try {
+						reader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
-	public void setVtSymbols(Map<String,String> vtSymbols) {
-		this.vtSymbols = vtSymbols;
+
+//			contractMap =
+
+			Map<String, Map<String,String>> map = new HashMap<String,Map<String,String>>();
+
+		}
 	}
 }
