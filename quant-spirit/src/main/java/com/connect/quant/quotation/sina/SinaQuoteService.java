@@ -2,11 +2,15 @@ package com.connect.quant.quotation.sina;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import com.connect.quant.dao.mapper.FutureQuoteMapper;
+import com.connect.quant.dao.mapper.TickMapper;
+import com.connect.quant.model.Tick;
+import com.connect.quant.quotation.TickEvent;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -18,7 +22,6 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.connect.quant.quotation.QuoteService;
@@ -30,8 +33,9 @@ public class SinaQuoteService extends QuoteService{
 	private static final Logger logger = LoggerFactory.getLogger(SinaQuoteService.class);
 	
 	@Autowired
-	@Qualifier("quoteConfig")
 	private SinaQuoteConfig quoteConfig;
+	private TickMapper tickMapper;
+
 	private CloseableHttpAsyncClient client = null;
 	private HttpGet[] requests = null;
 	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
@@ -40,15 +44,16 @@ public class SinaQuoteService extends QuoteService{
 		//初始化
 		if(client == null){
 			RequestConfig requestConfig = RequestConfig.custom()
-					 .setSocketTimeout(3000)
-					 .setConnectTimeout(3000).build();
-			client = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig)
-					 .build();
+					 .setSocketTimeout(quoteConfig.DEFAULT_INTERVAL)
+					 .setConnectTimeout(quoteConfig.DEFAULT_INTERVAL).build();
+			client = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig).build();
 			
-			requests = new HttpGet[quoteConfig.getVtSymbols().size()];
-			for(int i=0;i<requests.length;i++){
-				requests[i] = new HttpGet(quoteConfig.getServiceUrl() + quoteConfig.getVtSymbols().get(i));
-			}
+			requests = new HttpGet[quoteConfig.getContractList().size()];
+			int i = 0;
+			for(String key:quoteConfig.getContractList().keySet()){
+			    requests[i] = new HttpGet(quoteConfig.getServiceUrl() + key);
+			    i++;
+            }
 		}
 		
 		if(!client.isRunning()){
@@ -81,7 +86,15 @@ public class SinaQuoteService extends QuoteService{
 							
 							SinaStockQuote sq = new SinaStockQuote(result);
 							sq.setSymbol(request.getRequestLine().getUri().substring(quoteConfig.getServiceUrl().length()));
-							
+
+							Map<String,Object> m = quoteConfig.getContractList().get(sq.getSymbol());
+							Tick tick = sq.toTick((double)m.get("upperLimit"),(double)m.get("lowerLimit"));
+							tickMapper.insert(tick);
+
+							//fire a event for new tick
+							TickEvent event = new TickEvent();
+							event.setTick(tick);
+
 						} catch (IOException e) {
 							e.printStackTrace();
 						} finally{
@@ -107,7 +120,6 @@ public class SinaQuoteService extends QuoteService{
 			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			throw new Exception("Communicating with SINA hq server is failed.");
 		}
 	}
 

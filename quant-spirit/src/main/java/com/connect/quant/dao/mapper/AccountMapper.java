@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.Account;
 import com.connect.quant.model.AccountExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface AccountMapper {
 
 	/**

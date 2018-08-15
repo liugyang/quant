@@ -13,25 +13,25 @@
         </commentGenerator>  
         <!-- 数据库链接URL、用户名、密码 -->  
          <!--<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/my_db?characterEncoding=utf8" userId="root" password="123456"> -->   
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.1.171.68:3306/stock" userId="zzfwadmin" password="Jzsec@2017"> 
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://139.162.119.38:3306/quote?useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;autoReconnectForPools=true&amp;useSSL=false" userId="root" password="Liu_Guo_1982">
         </jdbcConnection>  
         <javaTypeResolver>  
             <property name="forceBigDecimals" value="false" />  
         </javaTypeResolver>  
         <!-- 生成模型的包名和位置 -->  
-        <javaModelGenerator targetPackage="com.connect.quant.model" targetProject="quant-spirit/src/main/java">  
+        <javaModelGenerator targetPackage="com.connect.quant.model" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />  
             <property name="trimStrings" value="true" />  
         </javaModelGenerator>  
         <!-- 生成的映射文件包名和位置 -->  
-        <sqlMapGenerator targetPackage="com.connect.quant.dao.xml" targetProject="quant-spirit/src/main/java">  
+        <sqlMapGenerator targetPackage="com.connect.quant.dao.xml" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />  
         </sqlMapGenerator>  
         <!-- 生成DAO的包名和位置 -->  
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.connect.quant.dao.mapper" targetProject="quant-spirit/src/main/java">  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.connect.quant.dao.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />  
         </javaClientGenerator>
-        
+        <!--
         <table tableName="STOCK_QUOTE" domainObjectName="StockQuote"/>
         <table tableName="FUTURE_QUOTE" domainObjectName="FutureQuote"/>
         <table tableName="PRODUCT_QUOTE" domainObjectName="ProductQuote"/>
@@ -41,5 +41,7 @@
         <table tableName="ACCOUNT" domainObjectName="Account"/>
         <table tableName="TRADE" domainObjectName="Trade"/>
         <table tableName="POSITIONS" domainObjectName="Position"/>
+        -->
+        <table tableName="TICK" domainObjectName="Tick"/>
     </context>  
 </generatorConfiguration>

@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.Order;
 import com.connect.quant.model.OrderExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrderMapper {
 
 	/**

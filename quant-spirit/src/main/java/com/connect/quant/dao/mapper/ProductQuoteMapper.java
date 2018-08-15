@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.ProductQuote;
 import com.connect.quant.model.ProductQuoteExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ProductQuoteMapper {
 
 	/**

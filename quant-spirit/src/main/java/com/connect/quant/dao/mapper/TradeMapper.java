@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.Trade;
 import com.connect.quant.model.TradeExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TradeMapper {
 
 	/**

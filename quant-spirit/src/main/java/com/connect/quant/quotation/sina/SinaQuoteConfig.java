@@ -4,6 +4,9 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -16,7 +19,8 @@ import com.connect.quant.quotation.QuoteConfig;
 public class SinaQuoteConfig extends QuoteConfig{
 	
 	public final static String DEFAULT_SERVICE_URL = "http://hq.sinajs.cn/list=";
-	public final static long DEFAULT_INTERVAL = 3000;
+	public final static String DEFAULT_CONTRACT_PATH = "ContractList.json";
+	public final static int DEFAULT_INTERVAL = 3000;
 
 	private String serviceUrl;
 	
@@ -26,7 +30,7 @@ public class SinaQuoteConfig extends QuoteConfig{
 	/**	时间窗口，cron表达式 */
 	private String tradeTimeExpression;
 	/**关注合约的配置信息，需要通过加载contractList配置文件*/
-	private Map<String, Map<String,String>> contractMap = null;
+	private Map<String, Map<String,Object>> contractMap = null;
 
 	public String getTradeTimeExpression() {
 		return tradeTimeExpression;
@@ -43,6 +47,8 @@ public class SinaQuoteConfig extends QuoteConfig{
 	}
 
 	public String getContractsListPath() {
+		if(contractsListPath == null)
+			contractsListPath = DEFAULT_CONTRACT_PATH;
 		return contractsListPath;
 	}
 
@@ -62,8 +68,10 @@ public class SinaQuoteConfig extends QuoteConfig{
 		this.interval = interval;
 	}
 
-	public Map<String, Map<String,String>> getContractList() throws FileNotFoundException {
+	public Map<String, Map<String,Object>> getContractList() {
 		if(contractMap == null) {
+			contractMap = new HashMap<String,Map<String,Object>>();
+
 			BufferedReader reader = null;
 			String content = "";
 			try{
@@ -87,11 +95,19 @@ public class SinaQuoteConfig extends QuoteConfig{
 				}
 			}
 
+			JSONObject obj = (JSONObject)JSON.parse(content);
+			JSONArray array = obj.getJSONArray("contracts");
+			if(array != null){
+				for(int i=0;i<array.size();i++){
+					JSONObject o = (JSONObject)array.get(i);
+					Map<String,Object> m = new HashMap<String,Object>();
+					for(String key:o.keySet())
+						m.put(key,o.get(key));
 
-//			contractMap =
-
-			Map<String, Map<String,String>> map = new HashMap<String,Map<String,String>>();
-
+					contractMap.put((String)o.get("symbol"),m);
+				}
+			}
 		}
+		return contractMap;
 	}
 }

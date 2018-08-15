@@ -1,8 +1,7 @@
 package com.connect.quant.quotation;
 
-import org.springframework.context.ApplicationEvent;
-
 import com.connect.quant.model.Tick;
+import org.springframework.context.ApplicationEvent;
 
 public class TickEvent extends ApplicationEvent {
 

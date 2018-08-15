@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.Position;
 import com.connect.quant.model.PositionExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PositionMapper {
 
 	/**

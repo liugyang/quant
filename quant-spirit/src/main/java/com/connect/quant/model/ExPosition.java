@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.cglib.beans.BeanCopier;
 
 import com.connect.quant.Constant;
-import com.connect.quant.model.Order;
-import com.connect.quant.model.Trade;
 
 public class ExPosition extends Position{
 	

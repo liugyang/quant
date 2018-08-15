@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.StockQuote;
 import com.connect.quant.model.StockQuoteExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface StockQuoteMapper {
 
 	/**

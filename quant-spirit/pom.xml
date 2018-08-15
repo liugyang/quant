@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
+			<version>5.1.40</version>
 		</dependency>
 		<!-- commons-lang3 -->
 		<dependency>
@@ -123,6 +123,13 @@
                     <overwrite>true</overwrite>
                     <verbose>true</verbose>
                 </configuration>
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.40</version>
+					</dependency>
+				</dependencies>
             </plugin>
 		</plugins>
 	</build>

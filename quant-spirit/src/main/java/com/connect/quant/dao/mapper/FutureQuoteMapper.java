@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.FutureQuote;
 import com.connect.quant.model.FutureQuoteExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface FutureQuoteMapper {
 
 	/**

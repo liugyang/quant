@@ -1,0 +1,12 @@
+{
+"contracts":[
+    {
+        "symbol":"",
+        "exhange":"",
+        "upperLimit":0.1,
+        "lowerLimit":0.1,
+        "currency":"",
+        "productClass":""
+        "dataSetName":""
+    }]
+}

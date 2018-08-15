@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import com.connect.quant.model.Bar;
 import com.connect.quant.model.BarExample;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface BarMapper {
 
 	/**

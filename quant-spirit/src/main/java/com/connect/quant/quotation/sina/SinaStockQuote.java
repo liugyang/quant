@@ -4,8 +4,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import com.connect.quant.model.Tick;
 import com.connect.quant.model.StockQuote;
+import com.connect.quant.model.Tick;
 
 /**
  * 新浪A股行情对象
@@ -71,14 +71,14 @@ public class SinaStockQuote extends StockQuote {
         }
     }
 
-    public Tick toTick() {
+    public Tick toTick(double upperLimitRate, double lowerLimitRate) {
         Tick tick = new Tick();
         tick.setSymbol(this.getSymbol());
         tick.setVtSymbol(this.getSymbol() + "." + this.getExchange());
         tick.setLastPrice(this.getCurrentPrice());
         tick.setLastVolume(this.getNumberOfShareTraded());
         tick.setVolume(this.getNumberOfShareTraded());
-        tick.setOpenlongerest(this.getMoneyOfShareTraded());
+        tick.setOpenlongerest(this.getNumberOfShareTraded());
         tick.setTime(timeFormat.format(this.getTime()));
         tick.setDate(dateFormat.format(this.getDate()));
         tick.setDatetime(tick.getDate() + " " + tick.getTime());
@@ -86,8 +86,8 @@ public class SinaStockQuote extends StockQuote {
         tick.setHighPrice(this.getHighestPrice());
         tick.setLowPrice(this.getLowestPrice());
         tick.setPreClosePrice(this.getClosingPrice());
-        tick.setUpperLimit(1);
-        tick.setLowerLimit(1);
+        tick.setUpperLimit(this.getOpeningPrice()*(1+upperLimitRate));
+        tick.setLowerLimit(this.getOpeningPrice()*(1-lowerLimitRate));
         tick.setBidPrice1(this.getPriceOfSale1());
         tick.setBidPrice2(this.getPriceOfSale2());
         tick.setBidPrice3(this.getPriceOfSale3());
@@ -108,6 +108,8 @@ public class SinaStockQuote extends StockQuote {
         tick.setAskVolume3(this.getAmountOfBuy3());
         tick.setAskVolume4(this.getAmountOfBuy4());
         tick.setAskVolume5(this.getAmountOfBuy5());
+
+        return tick;
     }
 
     @Override
