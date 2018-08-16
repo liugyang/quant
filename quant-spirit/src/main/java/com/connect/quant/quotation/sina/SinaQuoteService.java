@@ -22,9 +22,12 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.connect.quant.quotation.QuoteService;
+
+import javax.annotation.Resource;
 
 
 @Service
@@ -34,11 +37,18 @@ public class SinaQuoteService extends QuoteService{
 	
 	@Autowired
 	private SinaQuoteConfig quoteConfig;
+
+	@Resource
+	private ApplicationContext applicationContext;
+
+	@Autowired
 	private TickMapper tickMapper;
 
 	private CloseableHttpAsyncClient client = null;
 	private HttpGet[] requests = null;
 	private DateFormat df = new SimpleDateFormat("HH:mm:ss");
+
+	private Tick tmpTick;
 
 	private CloseableHttpAsyncClient getClient(){
 		//初始化
@@ -88,12 +98,13 @@ public class SinaQuoteService extends QuoteService{
 							sq.setSymbol(request.getRequestLine().getUri().substring(quoteConfig.getServiceUrl().length()));
 
 							Map<String,Object> m = quoteConfig.getContractList().get(sq.getSymbol());
-							Tick tick = sq.toTick((double)m.get("upperLimit"),(double)m.get("lowerLimit"));
-							tickMapper.insert(tick);
+							tmpTick = sq.toTick((double)m.get("upperLimit"),(double)m.get("lowerLimit"));
+							tickMapper.insert(tmpTick);
 
 							//fire a event for new tick
-							TickEvent event = new TickEvent();
-							event.setTick(tick);
+							TickEvent event = new TickEvent(tmpTick);
+							event.setTick(tmpTick);
+							applicationContext.publishEvent(event);
 
 						} catch (IOException e) {
 							e.printStackTrace();

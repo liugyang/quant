@@ -12,7 +12,7 @@ import org.quartz.JobExecutionException;
  */
 public abstract class QuoteService implements Job{
 	
-	public abstract void processTick();
+	public abstract void receive();
 	
 	public abstract void processBar();
 
