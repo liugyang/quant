@@ -18,6 +18,10 @@ import com.connect.quant.quotation.QuoteConfig;
 @ConfigurationProperties(prefix = "config.quote.sina")
 public class SinaQuoteConfig extends QuoteConfig{
 	
+	public final static String STOCK = "stock";
+	public final static String FUTURE = "future";
+	public final static String PRODUCT = "product";
+	
 	public final static String DEFAULT_SERVICE_URL = "http://hq.sinajs.cn/list=";
 	public final static String DEFAULT_CONTRACT_PATH = "ContractList.json";
 	public final static int DEFAULT_INTERVAL = 3000;

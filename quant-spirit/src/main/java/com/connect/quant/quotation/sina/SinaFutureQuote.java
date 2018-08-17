@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.connect.quant.model.FutureQuote;
+import com.connect.quant.model.Tick;
 
 /**
  * 新浪期货行情对象
@@ -12,6 +13,9 @@ import com.connect.quant.model.FutureQuote;
  *
  */
 public class SinaFutureQuote extends FutureQuote {
+	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final static DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private final static DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private String originalStr;
 
 	public SinaFutureQuote(String infoStr){
@@ -65,6 +69,47 @@ public class SinaFutureQuote extends FutureQuote {
 		this.setPriceOfSale5(Double.parseDouble(splits[26].trim()));
 		//splits[27] TODO
 	}
+	
+	public Tick toTick(double upperLimitRate, double lowerLimitRate) {
+        Tick tick = new Tick();
+        tick.setSymbol(this.getSymbol());
+        tick.setVtSymbol(this.getSymbol() + "." + this.getExchange());
+        tick.setLastPrice(this.getCurrentPrice());
+        tick.setLastVolume(this.getNumberOfTraded());
+        tick.setVolume(this.getNumberOfTraded());
+        tick.setOpenlongerest(this.getNumberOfHeld());
+        tick.setTime(this.getTime());
+        tick.setDate(this.getDate());
+        tick.setDatetime(tick.getDate() + " " + tick.getTime());
+        tick.setOpenPrice(this.getOpeningPrice());
+        tick.setHighPrice(this.getHighestPrice());
+        tick.setLowPrice(this.getLowestPrice());
+        tick.setPreClosePrice(this.getClosingPrice());
+        tick.setUpperLimit(this.getOpeningPrice()*(1+upperLimitRate));
+        tick.setLowerLimit(this.getOpeningPrice()*(1-lowerLimitRate));
+        tick.setBidPrice1(this.getPriceOfSale1());
+        tick.setBidPrice2(this.getPriceOfSale2());
+        tick.setBidPrice3(this.getPriceOfSale3());
+        tick.setBidPrice4(this.getPriceOfSale4());
+        tick.setBidPrice5(this.getPriceOfSale5());
+        tick.setAskPrice1(this.getPriceOfBuy1());
+        tick.setAskPrice2(this.getPriceOfBuy2());
+        tick.setAskPrice3(this.getPriceOfBuy3());
+        tick.setAskPrice4(this.getPriceOfBuy4());
+        tick.setAskPrice5(this.getPriceOfBuy5());
+        tick.setBidVolume1(this.getAmountOfSale());
+        tick.setBidVolume2(0L);
+        tick.setBidVolume3(0L);
+        tick.setBidVolume4(0L);
+        tick.setBidVolume5(0L);
+        tick.setAskVolume1(this.getAmountOfBuy());
+        tick.setAskVolume2(0L);
+        tick.setAskVolume3(0L);
+        tick.setAskVolume4(0L);
+        tick.setAskVolume5(0L);
+
+        return tick;
+    }
 
 	@Override
 	public String toString() {

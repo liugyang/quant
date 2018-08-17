@@ -29,6 +29,7 @@ public class SinaStockQuote extends StockQuote {
         String value = infoStr.split("=")[1];
         value.replace("\"", "");
         String[] splits = value.split(",");
+      
         this.setName(splits[0].trim());
         this.setOpeningPrice(Double.parseDouble(splits[1].trim()));
         this.setClosingPrice(Double.parseDouble(splits[2].trim()));
@@ -79,8 +80,8 @@ public class SinaStockQuote extends StockQuote {
         tick.setLastVolume(this.getNumberOfShareTraded());
         tick.setVolume(this.getNumberOfShareTraded());
         tick.setOpenlongerest(this.getNumberOfShareTraded());
-        tick.setTime(timeFormat.format(this.getTime()));
-        tick.setDate(dateFormat.format(this.getDate()));
+        tick.setTime(this.getTime());
+        tick.setDate(this.getDate());
         tick.setDatetime(tick.getDate() + " " + tick.getTime());
         tick.setOpenPrice(this.getOpeningPrice());
         tick.setHighPrice(this.getHighestPrice());

@@ -10,19 +10,14 @@ import org.quartz.JobExecutionException;
  * @author liugy
  *
  */
-public abstract class QuoteService implements Job{
+public abstract class QuoteReceiver implements Job{
 	
-	public abstract void receive();
+	public abstract void receive(JobExecutionContext context);
 	
-	public abstract void processBar();
-
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		processTick();
-		processBar();
+		receive(context);
 	}
 	
-	public abstract void beforeExecute();
 	
-	public abstract void afterExecute();
 }
