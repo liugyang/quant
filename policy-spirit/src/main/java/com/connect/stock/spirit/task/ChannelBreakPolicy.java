@@ -57,12 +57,17 @@ public class ChannelBreakPolicy {
     private ArrayBlockingQueue<Double> cacheforATR;
     /**当前平均ATR*/
     private double curAvgATR;
+    
+    private boolean isInitEvalData = false;
+    private boolean isInitAtrData = false;
 
     @Resource
     private ApplicationContext applicationContext;
 
     /**平均交易量*/
     private double avgTradeAmount = 0.0D;
+    /**昨日收盘价*/
+    private double closingPrice = 0.0D;
     /**今日最高价格*/
     private double highestPrice = 0.0D;
     /**今日最低价格*/
@@ -71,36 +76,24 @@ public class ChannelBreakPolicy {
     /**上次交易的行情*/
     private FutureQuote lastTradeQuote;
 
-    public ArrayBlockingQueue<FutureQuote> getFutureQuoteCache() {
-        return futureQuoteCache;
-    }
+    public double getClosingPrice() {
+		return closingPrice;
+	}
 
-    public void setFutureQuoteCache(ArrayBlockingQueue<FutureQuote> futureQuoteCache) {
-        this.futureQuoteCache = futureQuoteCache;
+	public ArrayBlockingQueue<FutureQuote> getFutureQuoteCache() {
+        return futureQuoteCache;
     }
 
     public ArrayBlockingQueue<FutureQuote> getFutureQuoteCacheForATR() {
         return futureQuoteCacheForATR;
     }
 
-    public void setFutureQuoteCacheForATR(ArrayBlockingQueue<FutureQuote> futureQuoteCacheForATR) {
-        this.futureQuoteCacheForATR = futureQuoteCacheForATR;
-    }
-
     public Map<String, Double> getStopLossPriceCacheForBuyLong() {
         return stopLossPriceCacheForBuyLong;
     }
 
-    public void setStopLossPriceCacheForBuyLong(Map<String, Double> stopLossPriceCacheForBuyLong) {
-        this.stopLossPriceCacheForBuyLong = stopLossPriceCacheForBuyLong;
-    }
-
     public Map<String, Double> getStopLossPriceCacheForShortSell() {
         return stopLossPriceCacheForShortSell;
-    }
-
-    public void setStopLossPriceCacheForShortSell(Map<String, Double> stopLossPriceCacheForShortSell) {
-        this.stopLossPriceCacheForShortSell = stopLossPriceCacheForShortSell;
     }
 
     public Date getLastDate() {
@@ -164,11 +157,13 @@ public class ChannelBreakPolicy {
         logger.info("Initializing evaluation data");
 
         this.futureQuoteCache = new ArrayBlockingQueue(this.config.getMacdDays());
-        if (this.lastDate == null) {
+        if (!isInitEvalData) {
             this.lastDate = this.dateFormat.parse(this.dateFormat.format(new Date()));
 
             List list = this.dao.getClosedFutureQuoteByDays(this.config.getEvalFutureId(), this.config.getMacdDays());
             this.futureQuoteCache.addAll(list);
+            
+            isInitEvalData = true;
         }
 
         if (this.futureQuoteCache.size() < this.config.getMacdDays()) {
@@ -212,11 +207,13 @@ public class ChannelBreakPolicy {
         logger.info("Initializing ATR data");
 
         this.futureQuoteCacheForATR = new ArrayBlockingQueue(this.config.getDaysForAtr());
-        if (this.lastDate == null) {
+        if (!isInitAtrData) {
             this.lastDate = this.dateFormat.parse(this.dateFormat.format(new Date()));
 
             List list = this.dao.getClosedFutureQuoteByDays(this.config.getEvalFutureId(), this.config.getDaysForAtr());
             this.futureQuoteCacheForATR.addAll(list);
+            
+            isInitAtrData = true;
         }
 
         if (this.futureQuoteCacheForATR.size() < this.config.getDaysForAtr()) {
@@ -286,6 +283,8 @@ public class ChannelBreakPolicy {
         List list = this.dao.getFutureQuoteByFutureId(this.config.getEvalFutureId(), 0, 1);
         if (list.size() > 0) {
             FutureQuote fq = (FutureQuote) list.get(0);
+            this.closingPrice = fq.getClosingPrice();
+            
             if (this.highestPrice < fq.getCurrentPrice()) {
                 logger.info("Discovered upward break point.");
 
@@ -304,9 +303,15 @@ public class ChannelBreakPolicy {
                     isShortSelling = false;
 
                     //模拟：计算止损线
-                    double price1 = fq.getHighestPrice() - config.getTimeAtrForHighestPrice()*curAvgATR;
-                    double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
-                    stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
+                    if(stopLossPriceCacheForBuyLong.containsKey(fq.getID())){
+                    	double price1 = stopLossPriceCacheForBuyLong.get(fq.getID());
+                        double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
+                        stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
+                    }else{
+	                    double price1 = fq.getCurrentPrice() - config.getTimeAtrForHighestPrice()*curAvgATR;
+	                    double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
+	                    stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
+                    }
                 }
             }
 
@@ -328,9 +333,15 @@ public class ChannelBreakPolicy {
                     isShortSelling = true;
 
                     //模拟：计算止损线
-                    double price1 = fq.getLowestPrice() + config.getTimeAtrForLowestPrice()*curAvgATR;
-                    double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
-                    stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
+                    if(stopLossPriceCacheForShortSell.containsKey(fq.getID())){
+	                    double price1 = stopLossPriceCacheForShortSell.get(fq.getID());
+	                    double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
+	                    stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
+                    }else{
+                    	double price1 = fq.getCurrentPrice() + config.getTimeAtrForLowestPrice()*curAvgATR;
+                        double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
+                        stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
+                    }
                 }
             }
 
