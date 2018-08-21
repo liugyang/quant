@@ -249,6 +249,27 @@ public class ChannelBreakPolicy {
 
         logger.info("[Current Average ATR]:"+curAvgATR);
     }
+    
+    @Scheduled(cron = "0 0 8 * * ?")
+    public void adjustStopLossLine() throws Exception {
+        logger.info("adjusting stop lossing line.");
+
+        List<FutureQuote> list = this.dao.getClosedFutureQuoteByDays(this.config.getEvalFutureId(), 1);
+        if(list.size() > 0){
+        	FutureQuote fq = list.get(0);
+        	if(stopLossPriceCacheForBuyLong != null && stopLossPriceCacheForBuyLong.containsKey(fq.getID())){
+        		double price1 = stopLossPriceCacheForBuyLong.get(fq.getID());
+                double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
+                stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
+        	}
+        	
+        	if(stopLossPriceCacheForShortSell != null && stopLossPriceCacheForShortSell.containsKey(fq.getID())){
+        		double price1 = stopLossPriceCacheForShortSell.get(fq.getID());
+                double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
+                stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
+        	}
+        }
+    }
 
     @Scheduled(fixedRate = 5000L)
     public void watching() throws SQLException {
@@ -303,15 +324,10 @@ public class ChannelBreakPolicy {
                     isShortSelling = false;
 
                     //模拟：计算止损线
-                    if(stopLossPriceCacheForBuyLong.containsKey(fq.getID())){
-                    	double price1 = stopLossPriceCacheForBuyLong.get(fq.getID());
-                        double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
-                        stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
-                    }else{
-	                    double price1 = fq.getCurrentPrice() - config.getTimeAtrForHighestPrice()*curAvgATR;
-	                    double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
-	                    stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
-                    }
+                    double price1 = fq.getCurrentPrice() - config.getTimeAtrForHighestPrice()*curAvgATR;
+                    double price2 = fq.getClosingPrice() - config.getTimeAtrForClosePrice()*curAvgATR;
+                    stopLossPriceCacheForBuyLong.put(fq.getID(),Math.max(price1,price2));
+                    
                 }
             }
 
@@ -333,15 +349,9 @@ public class ChannelBreakPolicy {
                     isShortSelling = true;
 
                     //模拟：计算止损线
-                    if(stopLossPriceCacheForShortSell.containsKey(fq.getID())){
-	                    double price1 = stopLossPriceCacheForShortSell.get(fq.getID());
-	                    double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
-	                    stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
-                    }else{
-                    	double price1 = fq.getCurrentPrice() + config.getTimeAtrForLowestPrice()*curAvgATR;
-                        double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
-                        stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
-                    }
+                	double price1 = fq.getCurrentPrice() + config.getTimeAtrForLowestPrice()*curAvgATR;
+                    double price2 = fq.getClosingPrice() + config.getTimeAtrForClosePrice()*curAvgATR;
+                    stopLossPriceCacheForShortSell.put(fq.getID(),Math.min(price1,price2));
                 }
             }
 

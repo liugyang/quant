@@ -95,31 +95,47 @@ public class FundController {
         return channelBreakPolicy.getLastTradeQuote();
     }
     
-    @RequestMapping(value="/calc_stop_loss_price/{symbol}/{direction}",method=RequestMethod.GET)
-    public @ResponseBody Map<String, Double> calcStopLossPrice(@PathVariable String symbol, @PathVariable String direction){
-    	
+    @RequestMapping(value="/calc_stop_loss_price/{symbol}/{direction}/{dealprice}",method=RequestMethod.GET)
+    public @ResponseBody Map<String, Double> calcStopLossPrice(@PathVariable String symbol, @PathVariable String direction,@PathVariable int dealprice){
+
     	Map<String, Double> m = new HashMap<String,Double>();
+    	double price = 1.0*dealprice/100;
+    	
     	if(direction == null){
     		return m;
     	}else{
     		String d = direction.toLowerCase().substring(0, 1);
     	
 	    	if("s".equals(d)){
-	    		double price1 = channelBreakPolicy.getStopLossPriceCacheForShortSell().get(symbol);
-	    		double price2 = channelBreakPolicy.getClosingPrice() + config.getTimeAtrForClosePrice()*channelBreakPolicy.getCurAvgATR();
-	            m.put("lowest", channelBreakPolicy.getLowestPrice());
-	            m.put("highest", channelBreakPolicy.getHighestPrice());
-	            m.put("closing", channelBreakPolicy.getClosingPrice());
-	            m.put("stopLoss", Math.min(price1,price2));
-	            return m;
-	    	}else if("l".equals(d)){
-	    		//模拟：计算止损线
-	    		double price1 = channelBreakPolicy.getStopLossPriceCacheForBuyLong().get(symbol);
-	            double price2 = channelBreakPolicy.getClosingPrice() - config.getTimeAtrForClosePrice()*channelBreakPolicy.getCurAvgATR();
+	    		double price1 = 0;
+	    		double price2 = 0;
+	    		if(channelBreakPolicy.getStopLossPriceCacheForShortSell() != null && 
+	    				channelBreakPolicy.getStopLossPriceCacheForShortSell().containsKey(symbol)){
+		    		price1 = channelBreakPolicy.getStopLossPriceCacheForShortSell().get(symbol);
+		    	}else{
+		    		price1 = price + config.getTimeAtrForLowestPrice()*channelBreakPolicy.getCurAvgATR();
+		    	}
+	    		price2 = channelBreakPolicy.getClosingPrice() + config.getTimeAtrForClosePrice()*channelBreakPolicy.getCurAvgATR();
 	            m.put("lowest", channelBreakPolicy.getLowestPrice());
 	            m.put("highest", channelBreakPolicy.getHighestPrice());
 	            m.put("closing", channelBreakPolicy.getClosingPrice());
 	            m.put("stopLoss", Math.max(price1,price2));
+	            return m;
+	    	}else if("l".equals(d)){
+	    		double price1 = 0;
+	    		double price2 = 0;
+	    		if(channelBreakPolicy.getStopLossPriceCacheForBuyLong() != null && 
+	    				channelBreakPolicy.getStopLossPriceCacheForBuyLong().containsKey(symbol)){
+		    		price1 = channelBreakPolicy.getStopLossPriceCacheForBuyLong().get(symbol);
+		    	}else{
+		    		price1 = price - config.getTimeAtrForHighestPrice()*channelBreakPolicy.getCurAvgATR();
+		    	}
+	    		
+	            price2 = channelBreakPolicy.getClosingPrice() - config.getTimeAtrForClosePrice()*channelBreakPolicy.getCurAvgATR();
+	            m.put("lowest", channelBreakPolicy.getLowestPrice());
+	            m.put("highest", channelBreakPolicy.getHighestPrice());
+	            m.put("closing", channelBreakPolicy.getClosingPrice());
+	            m.put("stopLoss", Math.min(price1,price2));
 	            return m;
 	    	}
     	}
