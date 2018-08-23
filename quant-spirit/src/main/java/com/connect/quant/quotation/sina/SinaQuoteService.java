@@ -26,6 +26,11 @@ import org.springframework.stereotype.Service;
 import com.connect.quant.model.Bar;
 import com.connect.quant.model.Tick;
 
+/**
+ * 接收新浪行情数据，
+ * @author liugy
+ *
+ */
 @Service
 public class SinaQuoteService {
 	private static final Logger logger = LoggerFactory.getLogger(SinaQuoteReceiver.class);

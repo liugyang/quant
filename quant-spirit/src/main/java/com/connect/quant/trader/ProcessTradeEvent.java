@@ -9,11 +9,11 @@ import com.connect.quant.model.Trade;
  * @author liugy
  *
  */
-public class TradeEvent extends ApplicationEvent {
+public class ProcessTradeEvent extends ApplicationEvent {
 	
 	private static final long serialVersionUID = 2768150104579038612L;
 
-	public TradeEvent(Object source) {
+	public ProcessTradeEvent(Object source) {
 		super(source);
 	}
 

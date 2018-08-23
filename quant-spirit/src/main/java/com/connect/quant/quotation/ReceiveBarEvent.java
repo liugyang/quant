@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent;
 
 import com.connect.quant.model.Bar;
 
-public class BarEvent extends ApplicationEvent {
+public class ReceiveBarEvent extends ApplicationEvent {
 
 	private static final long serialVersionUID = -2633123465500012086L;
 	
@@ -18,7 +18,7 @@ public class BarEvent extends ApplicationEvent {
 		this.bar = bar;
 	}
 
-	public BarEvent(Object source) {
+	public ReceiveBarEvent(Object source) {
 		super(source);
 	}
 

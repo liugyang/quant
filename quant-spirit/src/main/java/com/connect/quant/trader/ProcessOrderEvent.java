@@ -4,11 +4,11 @@ import org.springframework.context.ApplicationEvent;
 
 import com.connect.quant.model.Order;
 
-public class OrderEvent extends ApplicationEvent {
+public class ProcessOrderEvent extends ApplicationEvent {
 	private static final long serialVersionUID = -3405203972679256704L;
 	private Order order;
 
-	public OrderEvent(Object source) {
+	public ProcessOrderEvent(Object source) {
 		super(source);
 	}
 

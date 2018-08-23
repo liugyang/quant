@@ -111,4 +111,7 @@ public class Constant {
 	public final static String MODE_SHFE = "shfe";
 	/**平今惩罚*/
 	public final static String MODE_TDPENALTY = "tdpenalty"; 
+	
+	/**行情源：新浪*/
+	public final static String SOURCE_SINA = "sina";
 }
