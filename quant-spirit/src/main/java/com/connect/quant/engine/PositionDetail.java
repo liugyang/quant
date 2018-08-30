@@ -1,4 +1,4 @@
-package com.connect.quant.model;
+package com.connect.quant.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,10 +7,275 @@ import java.util.List;
 import org.springframework.cglib.beans.BeanCopier;
 
 import com.connect.quant.Constant;
+import com.connect.quant.model.Order;
+import com.connect.quant.model.Position;
+import com.connect.quant.model.PositionsDetail;
+import com.connect.quant.model.ReqOrder;
+import com.connect.quant.model.Tick;
+import com.connect.quant.model.Trade;
 
-public class ExPosition extends Position{
+public class PositionDetail extends PositionsDetail{
+	
+	protected int sno;
+	/** 合约代码 */
+	protected String symbol;
+	/** 交易所代码 */
+	protected String exchange;
+	/** 合约在vt系统中的唯一代码，合约代码.交易所代码 */
+	protected String vtSymbol;
+	/** 持仓在vt系统中的唯一代码，通常是vtSymbol.方向 */
+	protected String vtPositionName;
+	/** 名称 */
+	protected String name;
+	protected int size = 1;
+	/** 做多持仓 */
+	protected int longPos;
+	/** 做多昨日持仓 */
+	protected int longYd;
+	/** 做多今日持仓 */
+	protected int longTd;
+	/** 做多冻结 */
+	protected int longPosFrozen;
+	/** 做多昨日冻结 */
+	protected int longYdFrozen;
+	/** 做多今日冻结 */
+	protected int longTdFrozen;
+	/** 做多盈亏 */
+	protected double longPnl;
+	/** 做多均价 */
+	protected double longPrice;
+	/** 做空持仓 */
+	protected int shortPos;
+	/** 做空昨日持仓 */
+	protected int shortYd;
+	/** 做空今日持仓 */
+	protected int shortTd;
+	/** 做空冻结 */
+	protected int shortPosFrozen;
+	/** 做空昨日持仓 */
+	protected int shortYdFrozen;
+	/** 做空今日持仓 */
+	protected int shortTdFrozen;
+	/** 做空盈亏 */
+	protected double shortPnl;
+	/** 做空均价 */
+	protected double shortPrice;
+	/** 市价 */
+	protected double lastPrice;
+	/** 模式， 包括：普通模式、上期所今昨分别平仓、平今惩罚 */
+	protected String mode;
+	
+	protected String accountId;
 	
 	private HashMap<String, Order> workingOrderDict;
+
+	public int getSno() {
+		return sno;
+	}
+
+	public void setSno(int sno) {
+		this.sno = sno;
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
+	}
+
+	public String getVtSymbol() {
+		return vtSymbol;
+	}
+
+	public void setVtSymbol(String vtSymbol) {
+		this.vtSymbol = vtSymbol;
+	}
+
+	public String getVtPositionName() {
+		return vtPositionName;
+	}
+
+	public void setVtPositionName(String vtPositionName) {
+		this.vtPositionName = vtPositionName;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public int getLongPos() {
+		return longPos;
+	}
+
+	public void setLongPos(int longPos) {
+		this.longPos = longPos;
+	}
+
+	public int getLongYd() {
+		return longYd;
+	}
+
+	public void setLongYd(int longYd) {
+		this.longYd = longYd;
+	}
+
+	public int getLongTd() {
+		return longTd;
+	}
+
+	public void setLongTd(int longTd) {
+		this.longTd = longTd;
+	}
+
+	public int getLongPosFrozen() {
+		return longPosFrozen;
+	}
+
+	public void setLongPosFrozen(int longPosFrozen) {
+		this.longPosFrozen = longPosFrozen;
+	}
+
+	public int getLongYdFrozen() {
+		return longYdFrozen;
+	}
+
+	public void setLongYdFrozen(int longYdFrozen) {
+		this.longYdFrozen = longYdFrozen;
+	}
+
+	public int getLongTdFrozen() {
+		return longTdFrozen;
+	}
+
+	public void setLongTdFrozen(int longTdFrozen) {
+		this.longTdFrozen = longTdFrozen;
+	}
+
+	public Double getLongPnl() {
+		return longPnl;
+	}
+
+	public void setLongPnl(Double longPnl) {
+		this.longPnl = longPnl;
+	}
+
+	public Double getLongPrice() {
+		return longPrice;
+	}
+
+	public void setLongPrice(double longPrice) {
+		this.longPrice = longPrice;
+	}
+
+	public int getShortPos() {
+		return shortPos;
+	}
+
+	public void setShortPos(int shortPos) {
+		this.shortPos = shortPos;
+	}
+
+	public int getShortYd() {
+		return shortYd;
+	}
+
+	public void setShortYd(int shortYd) {
+		this.shortYd = shortYd;
+	}
+
+	public int getShortTd() {
+		return shortTd;
+	}
+
+	public void setShortTd(int shortTd) {
+		this.shortTd = shortTd;
+	}
+
+	public int getShortPosFrozen() {
+		return shortPosFrozen;
+	}
+
+	public void setShortPosFrozen(int shortPosFrozen) {
+		this.shortPosFrozen = shortPosFrozen;
+	}
+
+	public int getShortYdFrozen() {
+		return shortYdFrozen;
+	}
+
+	public void setShortYdFrozen(int shortYdFrozen) {
+		this.shortYdFrozen = shortYdFrozen;
+	}
+
+	public int getShortTdFrozen() {
+		return shortTdFrozen;
+	}
+
+	public void setShortTdFrozen(int shortTdFrozen) {
+		this.shortTdFrozen = shortTdFrozen;
+	}
+
+	public Double getShortPnl() {
+		return shortPnl;
+	}
+
+	public void setShortPnl(Double shortPnl) {
+		this.shortPnl = shortPnl;
+	}
+
+	public Double getShortPrice() {
+		return shortPrice;
+	}
+
+	public void setShortPrice(Double shortPrice) {
+		this.shortPrice = shortPrice;
+	}
+
+	public Double getLastPrice() {
+		return lastPrice;
+	}
+
+	public void setLastPrice(Double lastPrice) {
+		this.lastPrice = lastPrice;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getAccountId() {
+		return accountId;
+	}
+
+	public void setAccountId(String accountId) {
+		this.accountId = accountId;
+	}
 
 	public HashMap<String, Order> getWorkingOrderDict() {
 		if (workingOrderDict == null)
@@ -90,9 +355,7 @@ public class ExPosition extends Position{
 	 */
 	public void updateOrder(Order order){
 		// 将活动委托缓存下来
-        if(order.getStatus().equals(Constant.WORKING_STATUS.STATUS_UNKNOWN) ||
-        		order.getStatus().equals(Constant.WORKING_STATUS.STATUS_PARTTRADED) ||
-        		order.getStatus().equals(Constant.WORKING_STATUS.STATUS_NOTTRADED)){
+        if(Constant.WORKING_STATUS.contains(order.getStatus())){
             getWorkingOrderDict().put(order.getVtOrderId(),order);
             
         // 移除缓存中已经完成的委托
@@ -119,7 +382,7 @@ public class ExPosition extends Position{
         // 遍历统计
         for(Order order:getWorkingOrderDict().values()){
             // 计算剩余冻结量
-            int frozenVolume = order.getTotalVolume() - order.getTradedVolume();
+            long frozenVolume = order.getTotalVolume() - order.getTradedVolume();
             
             // 多头委托
             if(order.getDirection().equals(Constant.DIRECTION_LONG)){
@@ -160,6 +423,25 @@ public class ExPosition extends Position{
             this.longPosFrozen = this.longYdFrozen + this.longTdFrozen;
             this.shortPosFrozen = this.shortYdFrozen + this.shortTdFrozen;
         }
+	}
+	/**
+	 * 持仓更新
+	 * @param pos
+	 */
+	public void updatePosition(Position pos){
+		if(Constant.DIRECTION_LONG.equals(pos.getDirection())){
+            this.longPos = pos.getPositions();
+            this.longYd = pos.getYdPosition();
+            this.longTd = this.longPos - this.longYd;
+            this.longPnl = pos.getPositionProfit();
+            this.longPrice = pos.getPrice();
+		}else if(Constant.DIRECTION_SHORT.equals(pos.getDirection())){
+			this.shortPos = pos.getPositions();
+            this.shortYd = pos.getYdPosition();
+            this.shortTd = this.shortPos - this.shortYd;
+            this.shortPnl = pos.getPositionProfit();
+            this.shortPrice = pos.getPrice();
+		}
 	}
 
 	/**
@@ -229,12 +511,12 @@ public class ExPosition extends Position{
 	 * 转换委托请求
 	 * @param order
 	 */
-	public List<Order> convertOrderReq(Order order){
+	public List<ReqOrder> convertOrderReq(ReqOrder order){
 		
-		int posAvailable = 0;
-        int tdAvailable = 0;
-        int ydAvailable = 0;  
-        List<Order> list = new ArrayList<Order>();
+		long posAvailable = 0;
+        long tdAvailable = 0;
+        long ydAvailable = 0;  
+        List<ReqOrder> list = new ArrayList<ReqOrder>();
 		// 普通模式无需转换
         if(this.mode.equals(Constant.MODE_NORMAL)){
         	list.add(order);
@@ -274,14 +556,14 @@ public class ExPosition extends Position{
             else {
             	BeanCopier copy = BeanCopier.create(Order.class, Order.class, false);
                 if(tdAvailable > 0){
-                	Order orderTd = new Order();
+                	ReqOrder orderTd = new ReqOrder();
                 	copy.copy(order, orderTd, null);
                 	orderTd.setOffset(Constant.OFFSET_CLOSETODAY);
                     orderTd.setTotalVolume(tdAvailable);
                     list.add(orderTd);
                 }
                     
-                Order orderYd = new Order();
+                ReqOrder orderYd = new ReqOrder();
                 copy.copy(order, orderYd, null);
                 orderYd.setOffset(Constant.OFFSET_CLOSEYESTERDAY);
                 orderYd.setTotalVolume(order.getTotalVolume() - tdAvailable);
@@ -327,7 +609,7 @@ public class ExPosition extends Position{
             	BeanCopier copy = BeanCopier.create(Order.class, Order.class, false);
             	
                 if(ydAvailable > 0){
-                    Order reqClose = new Order();
+                    ReqOrder reqClose = new ReqOrder();
                     copy.copy(order,reqClose,null);
                     if(this.exchange.equals(Constant.EXCHANGE_SHFE)){
                         reqClose.getOffset().equals(Constant.OFFSET_CLOSEYESTERDAY);
@@ -338,7 +620,7 @@ public class ExPosition extends Position{
                     list.add(reqClose);
                 }
                 
-                Order reqOpen = new Order();
+                ReqOrder reqOpen = new ReqOrder();
                 copy.copy(order,reqOpen,null);
                 reqOpen.setOffset(Constant.OFFSET_OPEN);
                 reqOpen.setTotalVolume(order.getTotalVolume() - ydAvailable);

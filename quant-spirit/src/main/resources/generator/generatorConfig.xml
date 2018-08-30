@@ -31,6 +31,7 @@
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.connect.quant.dao.mapper" targetProject="quant-spirit/src/main/java">
             <property name="enableSubPackages" value="true" />  
         </javaClientGenerator>
+
         <table tableName="STOCK_QUOTE" domainObjectName="StockQuote"/>
         <table tableName="FUTURE_QUOTE" domainObjectName="FutureQuote"/>
         <table tableName="PRODUCT_QUOTE" domainObjectName="ProductQuote"/>
@@ -40,5 +41,9 @@
         <table tableName="TRADE" domainObjectName="Trade"/>
         <table tableName="POSITIONS" domainObjectName="Position"/>
         <table tableName="TICK" domainObjectName="Tick"/>
+        <table tableName="ERROR" domainObjectName="Error"/>
+        <table tableName="CONTRACT" domainObjectName="Contract"/>
+        <table tableName="POSITION_DETAIL" domainObjectName="PositionsDetail"/>
+         
     </context>  
 </generatorConfiguration>

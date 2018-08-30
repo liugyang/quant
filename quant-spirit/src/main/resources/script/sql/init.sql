@@ -134,7 +134,7 @@ ORDER_TIME				VARCHAR(50),           --  发单时间
 CANCEL_TIME				VARCHAR(50),          --  撤单时间
 FRONT_ID				INT(11),                --  前置机编号
 SESSION_ID				INT(11),              --  连接编号
-ACCOUNT_ID				INT(11)
+ACCOUNT_ID				VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS ACCOUNT(
@@ -165,10 +165,10 @@ OFFSET					VARCHAR(50),          --  成交开平仓
 PRICE					DOUBLE,               --  成交价格
 VOLUME					INT(11),              --  成交数量
 TRADE_TIME				VARCHAR(50),          --  成交时间
-ACCOUNT_ID				INT(11)				
+ACCOUNT_ID				VARCHAR(50)				
 );
 
-CREATE TABLE IF NOT EXISTS POSITIONS(
+CREATE TABLE IF NOT EXISTS POSITION_DETAIL(
 SNO				 		INT(11) NOT NULL AUTO_INCREMENT primary key,
 SYMBOL			 		VARCHAR(50),          -- 合约代码
 EXCHANGE		 		VARCHAR(50),          -- 交易所代码
@@ -194,7 +194,22 @@ SHORT_PNL		 		DOUBLE,               -- 做空盈亏
 SHORT_PRICE		 		DOUBLE,               -- 做空均价
 LAST_PRICE		 		DOUBLE,               -- 市价
 MODE			 		VARCHAR(50),          -- 模式，包括：普通模式、上期所今昨分别平仓、平今惩罚
-ACCOUNT_ID		 		INT(11)
+ACCOUNT_ID		 		VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS POSITIONS(
+SNO				 		INT(11) NOT NULL AUTO_INCREMENT primary key,
+SYMBOL			 		VARCHAR(50),          -- 合约代码
+EXCHANGE		 		VARCHAR(50),          -- 交易所代码
+VT_SYMBOL		 		VARCHAR(50),          -- 合约在vt系统中的唯一代码，合约代码.交易所代码
+DIRECTION				VARCHAR(50),          -- 持仓方向
+POSITIONS				INT(11),              -- 持仓量
+FROZEN					INT(11),              -- 冻结数量
+PRICE					DOUBLE,               -- 持仓均价
+VT_POSITION_NAME		VARCHAR(50),          -- 持仓在vt系统中的唯一代码，通常是vtSymbol.方向
+YD_POSITION				INT(11),              -- 昨持仓
+POSITION_PROFIT			DOUBLE,               -- 持仓盈亏
+ACCOUNT_ID		 		VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS TICK(
@@ -235,4 +250,28 @@ ASK_VOLUME2				BIGINT,
 ASK_VOLUME3				BIGINT,
 ASK_VOLUME4				BIGINT,
 ASK_VOLUME5				BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS ERROR(
+SNO						INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ID						VARCHAR(50),
+MSG						VARCHAR(100),
+EXT_INFO				VARCHAR(200),
+DATE                   	DATE,
+TIME                   	TIME
+);
+
+CREATE TABLE IF NOT EXISTS CONTRACT(
+SNO							INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+SYMBOL						VARCHAR(50),
+EXCHANGE					VARCHAR(50),
+VT_SYMBOL					VARCHAR(50),
+NAME						VARCHAR(50),
+PRODUCT_CLASS				VARCHAR(50),
+SIZE						INT(11),
+PRICE_TICK					DOUBLE,
+STRIKE_PRICE				DOUBLE,
+UNDERLYING_SYMBOL			VARCHAR(50),
+OPTION_TYPE					VARCHAR(50),
+EXPIRY_DATE					VARCHAR(50)
 );

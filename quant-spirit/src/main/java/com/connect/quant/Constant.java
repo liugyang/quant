@@ -1,5 +1,8 @@
 package com.connect.quant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Constant {
 	/**方向常量*/
 	public final static String DIRECTION_NONE = "none";
@@ -17,6 +20,20 @@ public class Constant {
 	public final static String OFFSET_CLOSETODAY = "close today";
 	public final static String OFFSET_CLOSEYESTERDAY = "close yesterday";
 	public final static String OFFSET_UNKNOWN = "unknown";
+
+	public final static List<String> FINISHED_STATUS = new ArrayList<String>();
+	static{
+		FINISHED_STATUS.add("STATUS_ALLTRADED");
+	    FINISHED_STATUS.add("STATUS_REJECTED");
+	    FINISHED_STATUS.add("STATUS_CANCELLED");
+	}
+	
+	public final static List<String> WORKING_STATUS = new ArrayList<String>();
+	static{
+		WORKING_STATUS.add("STATUS_UNKNOWN");
+		WORKING_STATUS.add("STATUS_NOTTRADED");
+		WORKING_STATUS.add("STATUS_PARTTRADED");
+	}
 
 	/**状态常量*/
 	public final static String STATUS_NOTTRADED = "pending";
@@ -100,11 +117,6 @@ public class Constant {
 	public final static String GATEWAYTYPE_BTC = "btc";                         //比特币
 	public final static String GATEWAYTYPE_DATA = "data";                       //数据（非交易）
 	
-	
-	public enum WORKING_STATUS {
-		STATUS_UNKNOWN, STATUS_NOTTRADED, STATUS_PARTTRADED;
-	}
-	
 	/**普通模式*/
 	public final static String MODE_NORMAL = "normal";
 	/**上期所今昨分别平仓*/
@@ -114,4 +126,28 @@ public class Constant {
 	
 	/**行情源：新浪*/
 	public final static String SOURCE_SINA = "sina";
+	
+	//CTA引擎中涉及到的交易方向类型
+	/**买开*/
+	public final static String CTAORDER_BUY = "buy";
+	/**卖平*/
+	public final static String CTAORDER_SELL = "sell";
+	/**卖开*/
+	public final static String CTAORDER_SHORT = "short";
+	/**买开*/
+	public final static String CTAORDER_COVER = "cover";
+
+	//本地停止单状态
+	/**等待中*/
+	public final static String STOPORDER_WAITING = "waiting";
+	/**已撤销*/
+	public final static String STOPORDER_CANCELLED = "cancelled";
+	/**已触发*/
+	public final static String STOPORDER_TRIGGERED = "triggered";
+
+	//引擎类型，用于区分当前策略的运行环境
+	/**回测*/
+	public final static String ENGINETYPE_BACKTESTING = "backtesting";
+	/**实盘*/
+	public final static String ENGINETYPE_TRADING = "trading";
 }
